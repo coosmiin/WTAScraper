@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CoreCompat.Selenium.WebDriver" Version="3.4.0-beta001" />
+    <PackageReference Include="Selenium.Chrome.WebDriver" Version="2.30.0" />
+  </ItemGroup>
+
+</Project>
