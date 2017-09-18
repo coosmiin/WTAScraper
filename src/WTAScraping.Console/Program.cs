@@ -63,7 +63,7 @@ namespace WTAScraping.Console
 			smtp.Credentials = new NetworkCredential(configuration["OutlookUsername"], configuration["OutlookPassword"]);
 			smtp.EnableSsl = true;
 
-			smtp.Send("outlook_572ED13E695370D0@outlook.com", "coosmiin@yahoo.com", subject, string.Empty);
+			smtp.Send(configuration["OutlookSenderAddress"], configuration["OutlookToAddress"], subject, string.Empty);
 		}
 
 		private static void PrintPlayers(IWebDriver driver)
