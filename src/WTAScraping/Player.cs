@@ -9,6 +9,7 @@
 		}
 
 		public int Rank { get; }
+
 		public string Name { get; }
 	}
 }
