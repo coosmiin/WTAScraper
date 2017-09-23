@@ -1,7 +1,7 @@
-﻿using WTAScraping.UrlFormatters;
+﻿using WTAScraping.Formatters;
 using Xunit;
 
-namespace WTAScraping.UnitTests.UrlFormatters
+namespace WTAScraping.UnitTests.Formatters
 {
 	public class UrlFormatterTests
 	{

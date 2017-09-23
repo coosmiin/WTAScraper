@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="debug.log" />
+    <None Remove="players.json" />
     <None Remove="tournaments.json" />
   </ItemGroup>
 

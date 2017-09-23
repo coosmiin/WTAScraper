@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using WTAScraping.Players;
 using WTAScraping.Tournaments;
 using WTAScraping.Tournaments.Parsers;
 
@@ -53,27 +54,7 @@ namespace WTAScraping.Driver
 			return new Tournament(name, date, status);
 		}
 
-		public IEnumerable<string> GetCurrentTournamentNameUrls()
-		{
-			var urls = new List<string>();
-
-			_driver.Navigate().GoToUrl(TOURNAMENTS_URL);
-
-			IEnumerable<IWebElement> currentTournamentDrawAnchors = 
-				_driver.FindElements(By.CssSelector(".active-tournaments .field--name-draw-tournament-button a"));
-
-			if (!currentTournamentDrawAnchors.Any())
-				return urls;
-
-			foreach (var anchor in currentTournamentDrawAnchors)
-			{
-				
-			}
-
-			return urls;
-		}
-
-		public IEnumerable<Player> GetTournamentPlayers(string tournamentNameUrl)
+		public IEnumerable<SeededPlayer> GetTournamentPlayers(string tournamentNameUrl)
 		{			
 			_driver.Navigate().GoToUrl(string.Format($"http://www.wtatennis.com/tournament/{tournamentNameUrl}#draws"));
 
@@ -82,7 +63,7 @@ namespace WTAScraping.Driver
 			foreach (IWebElement element in elements)
 			{
 				IWebElement container = element.FindElement(By.XPath(".."));
-				string rankText = container.FindElement(By.CssSelector(".additionalInfo")).Text.Replace("&nbsp;", string.Empty);
+				string seedText = container.FindElement(By.CssSelector(".additionalInfo")).Text.Replace("&nbsp;", string.Empty);
 
 				IEnumerable<IWebElement> playerElements = container.FindElements(By.CssSelector(".player nobr"));
 
@@ -91,28 +72,15 @@ namespace WTAScraping.Driver
 
 				string name = playerElements.First().Text.Replace("&nbsp;", string.Empty);
 
-				yield return new Player(name, GetRank(rankText));
+				yield return new SeededPlayer(name, SeedRank(seedText));
 			}
 		}
 
-		private static Tournament CreateTournament(DateTime date, string tournamentUrl, TournamentStatus status)
+		private int SeedRank(string seedText)
 		{
-			string[] urlParts = tournamentUrl.Split('-');
+			int index = seedText.IndexOf(' ');
 
-			string name =
-				string.Join(
-					" ",
-					urlParts.Skip(1).Select(
-						u => u.Length <= 2 ? u.ToUpper() : string.Format($"{u.Substring(0, 1).ToUpper()}{u.Substring(1)}")));
-
-			return new Tournament(name, date, status);
-		}
-
-		private int GetRank(string rankText)
-		{
-			int index = rankText.IndexOf(' ');
-
-			return index <= 0 ? 99999 : int.Parse(rankText.Substring(0, index));
+			return index <= 0 ? SeededPlayer.MAX_SEED : int.Parse(seedText.Substring(0, index));
 		}
 	}
 }

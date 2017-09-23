@@ -18,7 +18,7 @@ namespace WTAScraping.Data
 
 		public void AddTournaments(IEnumerable<TournamentDetails> tournaments)
 		{
-			List<TournamentDetails> allTournaments = GetAllTournaments().ToList();
+			List<TournamentDetails> allTournaments = GetTournaments().ToList();
 
 			IEnumerable<string> tournamentsNames = tournaments.Select(t => t.Name).ToList();
 
@@ -34,10 +34,32 @@ namespace WTAScraping.Data
 
 			allTournaments.AddRange(tournaments);
 
-			SaveTournaments(allTournaments);
+			SaveTournaments(allTournaments.OrderByDescending(t => t.Date));
 		}
 
-		protected virtual IEnumerable<TournamentDetails> GetAllTournaments()
+		public void UpdateTournaments(IEnumerable<TournamentDetails> tournamentsDetails)
+		{
+			TournamentDetails[] tournaments = GetTournaments().ToArray();
+
+			foreach (var tournamentDetails in tournamentsDetails)
+			{
+				tournaments[Array.FindIndex(tournaments, t => t.Name == tournamentDetails.Name)] = tournamentDetails;
+			}
+
+			SaveTournaments(tournaments.OrderByDescending(t => t.Date));
+		}
+
+		public IEnumerable<TournamentDetails> GetTournaments(Func<TournamentDetails, bool> predicate = null)
+		{
+			IEnumerable<TournamentDetails> tournaments = GetTournaments();
+
+			if (predicate == null)
+				return tournaments;
+
+			return tournaments.Where(predicate);
+		}
+
+		protected virtual IEnumerable<TournamentDetails> GetTournaments()
 		{
 			return JsonConvert.DeserializeObject<IEnumerable<TournamentDetails>>(File.ReadAllText(_filePath));
 		}

@@ -1,17 +1,17 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace WTAScraping.Tournaments
 {
 	public class TournamentDetails : Tournament
 	{
-		public string FirstSeed { get; }
+		public IEnumerable<string> SeededPlayerNames { get; }
 
-		public TournamentDetails(string name, DateTime date, TournamentStatus status, string firstSeed)
+		public TournamentDetails(string name, DateTime date, TournamentStatus status, IEnumerable<string> seededPlayerNames)
 			: base(name, date, status)
 		{
-			FirstSeed = firstSeed;
+			SeededPlayerNames = seededPlayerNames;
 		}
 
 		public override int GetHashCode()
@@ -24,7 +24,7 @@ namespace WTAScraping.Tournaments
 				hash = hash * 397 + Name?.GetHashCode() ?? 0;
 				hash = hash * 397 + Date.GetHashCode();
 				hash = hash * 397 + Status.GetHashCode();
-				hash = hash * 397 + FirstSeed?.GetHashCode() ?? 0;
+				hash = hash * 397 + SeededPlayerNames?.GetHashCode() ?? 0;
 
 				return hash;
 			}
@@ -32,9 +32,13 @@ namespace WTAScraping.Tournaments
 
 		public override bool Equals(object obj)
 		{
-			var o = (TournamentDetails)obj;
+			var o = obj as TournamentDetails;
 
-			return Name == o.Name && Date == o.Date && Status == o.Status && FirstSeed == o.FirstSeed;
+			if (o == null)
+				return false;
+
+			return Name == o.Name && Date == o.Date && Status == o.Status
+				&& ((SeededPlayerNames == null && o.SeededPlayerNames == null) || SeededPlayerNames.SequenceEqual(o.SeededPlayerNames));
 		}
 	}
 }

@@ -12,7 +12,7 @@ using WTAScraping.Data;
 using WTAScraping.Driver;
 using WTAScraping.Tournaments;
 using WTAScraping.Tournaments.Parsers;
-using WTAScraping.UrlFormatters;
+using WTAScraping.Formatters;
 using WTAScraping.Website;
 
 namespace WTAScraping.Console
@@ -24,11 +24,16 @@ namespace WTAScraping.Console
 			IWebDriver driver = null;
 			try
 			{
+				var tournamentRepository = new TournamentRepository(args[0]);
+				var playerRepository = new PlayerRepository(args[1]);
+
 				driver = new ChromeDriver(AppContext.BaseDirectory);
 
 				var wtaDriver = new WtaDriver(driver, new TournamentDataParser());
-				var wtaWebsite = new WtaWebsite(wtaDriver, new UrlFormatter());
-				var tournamentRepository = new TournamentRepository(args[0]);
+				var wtaWebsite = new WtaWebsite(wtaDriver, new UrlFormatter(), new PlayerNameFormatter());
+
+				playerRepository.SavePlayers(wtaWebsite.GetPlayers());
+				var players = playerRepository.GetPlayers();
 
 				RefreshTournamentsData(wtaWebsite, tournamentRepository);
 
@@ -47,9 +52,19 @@ namespace WTAScraping.Console
 
 		private static void RefreshTournamentsData(IWtaWebsite wtaWebsite, ITournamentRepository tournamentRepository)
 		{
-			IEnumerable<TournamentDetails> newTournaments = wtaWebsite.GetTournamentsDetails().ToList();
+			IEnumerable<Tournament> newTournaments = wtaWebsite.GetCurrentAndUpcomingTournaments();
 
-			tournamentRepository.AddTournaments(newTournaments);
+			tournamentRepository.AddTournaments(newTournaments.AsTournamentDetails());
+
+			IEnumerable<TournamentDetails> tournamentsDetails =
+				tournamentRepository
+					.GetTournaments(
+						t => (t.Status == TournamentStatus.Current || t.Status == TournamentStatus.Upcomming)  
+							&& (t.SeededPlayerNames == null || !t.SeededPlayerNames.Any()));
+
+			tournamentsDetails = wtaWebsite.RefreshSeededPlayers(tournamentsDetails);
+
+			tournamentRepository.UpdateTournaments(tournamentsDetails);
 
 			//SendEmail("This is a test!");
 		}
@@ -64,34 +79,6 @@ namespace WTAScraping.Console
 			smtp.EnableSsl = true;
 
 			smtp.Send(configuration["OutlookSenderAddress"], configuration["OutlookToAddress"], subject, string.Empty);
-		}
-
-		private static void PrintPlayers(IWebDriver driver)
-		{
-			var wta = new WtaDriver(driver, new TournamentDataParser());
-
-			IEnumerable<string> tournamentNameUrls = wta.GetCurrentTournamentNameUrls();
-
-			foreach (var tournamentNameUrl in tournamentNameUrls)
-			{
-				IEnumerable<Player> yieldPlayers = wta.GetTournamentPlayers(tournamentNameUrl);
-				var players = new List<Player>();
-				foreach (Player player in yieldPlayers)
-				{
-					players.Add(player);
-					System.Console.Write("+");
-				}
-
-				System.Console.WriteLine();
-				foreach (Player player in players.OrderBy(p => p.Rank))
-				{
-					System.Console.WriteLine(string.Format($"{player.Rank}\t\t{player.Name}"));
-				}
-
-				System.Console.WriteLine();
-				System.Console.WriteLine("------------");
-				System.Console.WriteLine();
-			}
 		}
 
 		private static IConfigurationRoot BuildConfiguration()

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using WTAScraping.Players;
 using WTAScraping.Tournaments;
 
 namespace WTAScraping.Driver
@@ -6,7 +7,6 @@ namespace WTAScraping.Driver
 	public interface IWtaDriver
 	{
 		IEnumerable<Tournament> GetCurrentAndUpcomingTournaments();
-		IEnumerable<string> GetCurrentTournamentNameUrls();
-		IEnumerable<Player> GetTournamentPlayers(string tournamentNameUrl);
+		IEnumerable<SeededPlayer> GetTournamentPlayers(string tournamentNameUrl);
 	}
 }

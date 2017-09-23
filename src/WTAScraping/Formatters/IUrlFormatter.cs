@@ -1,4 +1,4 @@
-﻿namespace WTAScraping.UrlFormatters
+﻿namespace WTAScraping.Formatters
 {
 	public interface IUrlFormatter
 	{
