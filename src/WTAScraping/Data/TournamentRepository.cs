@@ -30,9 +30,11 @@ namespace WTAScraping.Data
 				}
 			});
 
-			allTournaments.RemoveAll(t => tournamentsNames.Contains(t.Name));
-
-			allTournaments.AddRange(tournaments);
+			allTournaments = 
+				allTournaments.Concat(tournaments)
+					.ToLookup(t => t.Name)
+					.Select(g => g.Aggregate((t1, t2) => new TournamentDetails(t1.Name, t2.Date, t2.Status, t1.SeededPlayerNames)))
+					.ToList();
 
 			SaveTournaments(allTournaments.OrderByDescending(t => t.Date));
 		}

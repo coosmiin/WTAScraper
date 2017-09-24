@@ -38,7 +38,7 @@ namespace WTAScraping.Tournaments
 				return false;
 
 			return Name == o.Name && Date == o.Date && Status == o.Status
-				&& ((SeededPlayerNames == null && o.SeededPlayerNames == null) || SeededPlayerNames.SequenceEqual(o.SeededPlayerNames));
+				&& (SeededPlayerNames ?? Enumerable.Empty<string>()).SequenceEqual(o.SeededPlayerNames ?? Enumerable.Empty<string>());
 		}
 	}
 }

@@ -16,7 +16,7 @@ namespace WTAScraping.UnitTests.Data
 		{
 			var expectedTournaments = new[]
 			{
-				new TournamentDetails("T1", DateTime.Now, TournamentStatus.Current, new[] { "P1" }),
+				new TournamentDetails("T1", DateTime.Now, TournamentStatus.Finished, new[] { "P1" }),
 				new TournamentDetails("T2", DateTime.Now, TournamentStatus.Current, new[] { "P2" })
 			};
 			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
@@ -29,7 +29,8 @@ namespace WTAScraping.UnitTests.Data
 
 			repositoryMock.Protected()
 				.Setup("SaveTournaments", ItExpr.IsAny<IEnumerable<TournamentDetails>>())
-				.Callback<IEnumerable<TournamentDetails>>(tournaments => savedTournaments = tournaments)
+				.Callback<IEnumerable<TournamentDetails>>(
+					tournaments => savedTournaments = tournaments.OrderBy(t => t.Date).ToArray())
 				.Verifiable();
 
 			repositoryMock.Object.AddTournaments(new[] { expectedTournaments[1] });
@@ -43,9 +44,9 @@ namespace WTAScraping.UnitTests.Data
 		{
 			var expectedTournaments = new[]
 			{
-				new TournamentDetails("T1", DateTime.Now, TournamentStatus.Current, new[] { "P1" }),
-				new TournamentDetails("T2", DateTime.Now, TournamentStatus.Current, new[] { "P2" }),
-				new TournamentDetails("T3", DateTime.Now, TournamentStatus.Current, new[] { "P3" })
+				new TournamentDetails("T1", DateTime.Now, TournamentStatus.Finished, null),
+				new TournamentDetails("T2", DateTime.Now, TournamentStatus.Current, null),
+				new TournamentDetails("T3", DateTime.Now, TournamentStatus.Current, null)
 			};
 			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
 
@@ -57,7 +58,8 @@ namespace WTAScraping.UnitTests.Data
 
 			repositoryMock.Protected()
 				.Setup("SaveTournaments", ItExpr.IsAny<IEnumerable<TournamentDetails>>())
-				.Callback<IEnumerable<TournamentDetails>>(tournaments => savedTournaments = tournaments)
+				.Callback<IEnumerable<TournamentDetails>>(
+					tournaments => savedTournaments = tournaments.OrderBy(t => t.Date).ToArray())
 				.Verifiable();
 
 			repositoryMock.Object.AddTournaments(new[] { expectedTournaments[1], expectedTournaments[2] });
@@ -67,7 +69,49 @@ namespace WTAScraping.UnitTests.Data
 		}
 
 		[Fact]
-		public void AddTournaments_FinishedTournamentsChangeStatusToFinished()
+		public void AddTournaments_OverlappingTournaments_PreviousTournamentsDontLosePlayers()
+		{
+			var previousTournaments = new[]
+			{
+				new TournamentDetails("T1", new DateTime(0), TournamentStatus.Current, new[] { "P1" }),
+				new TournamentDetails("T2", new DateTime(0), TournamentStatus.Upcomming, new[] { "P2" })
+			};
+
+			var newTournaments = new[]
+			{
+				new TournamentDetails("T2", new DateTime(0), TournamentStatus.Current, null),
+				new TournamentDetails("T3", new DateTime(0), TournamentStatus.Upcomming, new[] { "P3" })
+			};
+
+			var expectedTournaments = new[]
+			{
+				new TournamentDetails("T1", new DateTime(0), TournamentStatus.Finished, new[] { "P1" }),
+				new TournamentDetails("T2", new DateTime(0), TournamentStatus.Current, new[] { "P2" }),
+				new TournamentDetails("T3", new DateTime(0), TournamentStatus.Upcomming, new[] { "P3" })
+			};
+
+			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
+
+			repositoryMock.Protected()
+				.Setup<IEnumerable<TournamentDetails>>("GetTournaments")
+				.Returns(previousTournaments);
+
+			var savedTournaments = Enumerable.Empty<TournamentDetails>();
+
+			repositoryMock.Protected()
+				.Setup("SaveTournaments", ItExpr.IsAny<IEnumerable<TournamentDetails>>())
+				.Callback<IEnumerable<TournamentDetails>>(
+					tournaments => savedTournaments = tournaments.ToArray())
+				.Verifiable();
+
+			repositoryMock.Object.AddTournaments(newTournaments);
+
+			repositoryMock.Protected().Verify("SaveTournaments", Times.Once(), ItExpr.IsAny<IEnumerable<TournamentDetails>>());
+			Assert.Equal(expectedTournaments, savedTournaments);
+		}
+
+		[Fact]
+		public void AddTournaments_FinishedTournaments_StatusIsChangedToFinished()
 		{
 			var previousTournaments = new[]
 			{
@@ -110,7 +154,7 @@ namespace WTAScraping.UnitTests.Data
 		}
 
 		[Fact]
-		public void AddTournaments_CurrentTournamentsChangeStatusToCurrent()
+		public void AddTournaments_UpcommingChangedStatusToCurrent_StatusIsChangedToCurrent()
 		{
 			var previousTournaments = new[]
 			{
