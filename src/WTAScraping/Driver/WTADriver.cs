@@ -13,12 +13,12 @@ namespace WTAScraping.Driver
 		private const string TOURNAMENTS_URL = "http://www.wtatennis.com/tournaments";
 
 		private readonly IWebDriver _driver;
-		private readonly ITournamentDataParser _dataParser;
+		private readonly ITournamentDataParser _tournamentDataParser;
 
 		public WtaDriver(IWebDriver driver, ITournamentDataParser dataParser)
 		{
 			_driver = driver;
-			_dataParser = dataParser;
+			_tournamentDataParser = dataParser;
 		}
 
 		public IEnumerable<Tournament> GetCurrentAndUpcomingTournaments()
@@ -44,14 +44,16 @@ namespace WTAScraping.Driver
 			IWebElement dateElement = container.FindElement(By.CssSelector(".group-header .date-display-single"));
 			string dateAttribute = dateElement.GetAttribute("content");
 
-			DateTime date = _dataParser.ParseDate(dateAttribute);
+			DateTime date = _tournamentDataParser.ParseDate(dateAttribute);
 
 			string tournamentHrefAttribute =
-				container.FindElement(By.CssSelector(".field--name-draw-tournament-button a")).GetAttribute("href");
+				container.FindElement(By.CssSelector("h2.title-teaser.display-small a")).GetAttribute("href");
 
-			string name = _dataParser.ParseName(tournamentHrefAttribute);
+			string name = _tournamentDataParser.ParseName(tournamentHrefAttribute);
 
-			return new Tournament(name, date, status);
+			int id = _tournamentDataParser.ParseId(tournamentHrefAttribute);
+
+			return new Tournament(id, name, date, status);
 		}
 
 		public IEnumerable<SeededPlayer> GetTournamentPlayers(string tournamentNameUrl)

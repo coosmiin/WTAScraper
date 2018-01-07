@@ -7,6 +7,8 @@ namespace WTAScraping.Tournaments
 {
 	public class Tournament
 	{
+		public int Id { get; }
+
 		public string Name { get; }
 
 		[JsonConverter(typeof(OnlyDateConverter))]
@@ -15,8 +17,9 @@ namespace WTAScraping.Tournaments
 		[JsonConverter(typeof(StringEnumConverter))]
 		public TournamentStatus Status { get; set; }
 
-		public Tournament(string name, DateTime date, TournamentStatus status)
+		public Tournament(int id, string name, DateTime date, TournamentStatus status)
 		{
+			Id = id;
 			Name = name;
 			Date = date;
 			Status = status;

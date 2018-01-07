@@ -12,12 +12,20 @@ namespace WTAScraping.UnitTests.Data
 	public class TournamentRepositoryTests
 	{
 		[Fact]
+		public void GetTournaments_FileDoesNotExist_ReturnsEmptyCollection()
+		{
+			var repository = new TournamentRepository("does_not_exist.json");
+
+			Assert.Empty(repository.GetTournaments());
+		}
+
+		[Fact]
 		public void AddTournaments_NoOverlappingTournaments_NewTournamentsAreSaved()
 		{
 			var expectedTournaments = new[]
 			{
-				new TournamentDetails("T1", DateTime.Now, TournamentStatus.Finished, new[] { "P1" }),
-				new TournamentDetails("T2", DateTime.Now, TournamentStatus.Current, new[] { "P2" })
+				new TournamentDetails(1, "T1", DateTime.Now, TournamentStatus.Finished, new[] { "P1" }),
+				new TournamentDetails(2, "T2", DateTime.Now, TournamentStatus.Current, new[] { "P2" })
 			};
 			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
 
@@ -44,9 +52,9 @@ namespace WTAScraping.UnitTests.Data
 		{
 			var expectedTournaments = new[]
 			{
-				new TournamentDetails("T1", DateTime.Now, TournamentStatus.Finished, null),
-				new TournamentDetails("T2", DateTime.Now, TournamentStatus.Current, null),
-				new TournamentDetails("T3", DateTime.Now, TournamentStatus.Current, null)
+				new TournamentDetails(1, "T1", DateTime.Now, TournamentStatus.Finished, null),
+				new TournamentDetails(2, "T2", DateTime.Now, TournamentStatus.Current, null),
+				new TournamentDetails(3, "T3", DateTime.Now, TournamentStatus.Current, null)
 			};
 			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
 
@@ -73,21 +81,21 @@ namespace WTAScraping.UnitTests.Data
 		{
 			var previousTournaments = new[]
 			{
-				new TournamentDetails("T1", new DateTime(0), TournamentStatus.Current, new[] { "P1" }),
-				new TournamentDetails("T2", new DateTime(0), TournamentStatus.Upcomming, new[] { "P2" })
+				new TournamentDetails(1, "T1", new DateTime(0), TournamentStatus.Current, new[] { "P1" }),
+				new TournamentDetails(2, "T2", new DateTime(0), TournamentStatus.Upcomming, new[] { "P2" })
 			};
 
 			var newTournaments = new[]
 			{
-				new TournamentDetails("T2", new DateTime(0), TournamentStatus.Current, null),
-				new TournamentDetails("T3", new DateTime(0), TournamentStatus.Upcomming, new[] { "P3" })
+				new TournamentDetails(2, "T2", new DateTime(0), TournamentStatus.Current, null),
+				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Upcomming, new[] { "P3" })
 			};
 
 			var expectedTournaments = new[]
 			{
-				new TournamentDetails("T1", new DateTime(0), TournamentStatus.Finished, new[] { "P1" }),
-				new TournamentDetails("T2", new DateTime(0), TournamentStatus.Current, new[] { "P2" }),
-				new TournamentDetails("T3", new DateTime(0), TournamentStatus.Upcomming, new[] { "P3" })
+				new TournamentDetails(1, "T1", new DateTime(0), TournamentStatus.Finished, new[] { "P1" }),
+				new TournamentDetails(2, "T2", new DateTime(0), TournamentStatus.Current, new[] { "P2" }),
+				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Upcomming, new[] { "P3" })
 			};
 
 			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
@@ -115,23 +123,23 @@ namespace WTAScraping.UnitTests.Data
 		{
 			var previousTournaments = new[]
 			{
-				new TournamentDetails("T1", new DateTime(0), TournamentStatus.Current, null),
-				new TournamentDetails("T2", new DateTime(0), TournamentStatus.Upcomming, null),
-				new TournamentDetails("T3", new DateTime(0), TournamentStatus.Current, null)
+				new TournamentDetails(1, "T1", new DateTime(0), TournamentStatus.Current, null),
+				new TournamentDetails(2, "T2", new DateTime(0), TournamentStatus.Upcomming, null),
+				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Current, null)
 			};
 
 			var newTournaments = new[]
 			{
-				new TournamentDetails("T3", new DateTime(0), TournamentStatus.Current, null),
-				new TournamentDetails("T4", new DateTime(0), TournamentStatus.Current, null)
+				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Current, null),
+				new TournamentDetails(4, "T4", new DateTime(0), TournamentStatus.Current, null)
 			};
 
 			var expectedTournaments = new[]
 			{
-				new TournamentDetails("T1", new DateTime(0), TournamentStatus.Finished, null),
-				new TournamentDetails("T2", new DateTime(0), TournamentStatus.Finished, null),
-				new TournamentDetails("T3", new DateTime(0), TournamentStatus.Current, null),
-				new TournamentDetails("T4", new DateTime(0), TournamentStatus.Current, null)
+				new TournamentDetails(1, "T1", new DateTime(0), TournamentStatus.Finished, null),
+				new TournamentDetails(2, "T2", new DateTime(0), TournamentStatus.Finished, null),
+				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Current, null),
+				new TournamentDetails(4, "T4", new DateTime(0), TournamentStatus.Current, null)
 			};
 
 			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
@@ -158,23 +166,23 @@ namespace WTAScraping.UnitTests.Data
 		{
 			var previousTournaments = new[]
 			{
-				new TournamentDetails("T1", new DateTime(0), TournamentStatus.Current, null),
-				new TournamentDetails("T2", new DateTime(0), TournamentStatus.Upcomming, null),
-				new TournamentDetails("T3", new DateTime(0), TournamentStatus.Upcomming, null)
+				new TournamentDetails(1, "T1", new DateTime(0), TournamentStatus.Current, null),
+				new TournamentDetails(2, "T2", new DateTime(0), TournamentStatus.Upcomming, null),
+				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Upcomming, null)
 			};
 
 			var newTournaments = new[]
 			{
-				new TournamentDetails("T3", new DateTime(0), TournamentStatus.Current, null),
-				new TournamentDetails("T4", new DateTime(0), TournamentStatus.Current, null)
+				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Current, null),
+				new TournamentDetails(4, "T4", new DateTime(0), TournamentStatus.Current, null)
 			};
 
 			var expectedTournaments = new[]
 			{
-				new TournamentDetails("T1", new DateTime(0), TournamentStatus.Finished, null),
-				new TournamentDetails("T2", new DateTime(0), TournamentStatus.Finished, null),
-				new TournamentDetails("T3", new DateTime(0), TournamentStatus.Current, null),
-				new TournamentDetails("T4", new DateTime(0), TournamentStatus.Current, null)
+				new TournamentDetails(1, "T1", new DateTime(0), TournamentStatus.Finished, null),
+				new TournamentDetails(2, "T2", new DateTime(0), TournamentStatus.Finished, null),
+				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Current, null),
+				new TournamentDetails(4, "T4", new DateTime(0), TournamentStatus.Current, null)
 			};
 
 			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
@@ -201,27 +209,27 @@ namespace WTAScraping.UnitTests.Data
 		{
 			var previousTournaments = new[]
 			{
-				new TournamentDetails("T1", new DateTime(0), TournamentStatus.Finished, null),
-				new TournamentDetails("T2", new DateTime(0), TournamentStatus.Upcomming, null),
-				new TournamentDetails("T3", new DateTime(0), TournamentStatus.Upcomming, new[] { "P31", "P32" }),
-				new TournamentDetails("T4", new DateTime(0), TournamentStatus.Current, new[] { "P4" }),
-				new TournamentDetails("T5", new DateTime(0), TournamentStatus.Current, new[] { "P5" })
+				new TournamentDetails(1, "T1", new DateTime(0), TournamentStatus.Finished, null),
+				new TournamentDetails(2, "T2", new DateTime(0), TournamentStatus.Upcomming, null),
+				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Upcomming, new[] { "P31", "P32" }),
+				new TournamentDetails(4, "T4", new DateTime(0), TournamentStatus.Current, new[] { "P4" }),
+				new TournamentDetails(5, "T5", new DateTime(0), TournamentStatus.Current, new[] { "P5" })
 			};
 
 			var updatedTournaments = new[]
 			{
-				new TournamentDetails("T2", new DateTime(0), TournamentStatus.Upcomming, new[] { "P21", "P22" }),
-				new TournamentDetails("T3", new DateTime(0), TournamentStatus.Current, new[] { "P31", "P32", "P33" }),
-				new TournamentDetails("T4", new DateTime(0), TournamentStatus.Current, new[] { "P4" })
+				new TournamentDetails(2, "T2", new DateTime(0), TournamentStatus.Upcomming, new[] { "P21", "P22" }),
+				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Current, new[] { "P31", "P32", "P33" }),
+				new TournamentDetails(4, "T4", new DateTime(0), TournamentStatus.Current, new[] { "P4" })
 			};
 
 			var expectedTournaments = new[]
 			{
-				new TournamentDetails("T1", new DateTime(0), TournamentStatus.Finished, null),
-				new TournamentDetails("T2", new DateTime(0), TournamentStatus.Upcomming, new[] { "P21", "P22" }),
-				new TournamentDetails("T3", new DateTime(0), TournamentStatus.Current, new[] { "P31", "P32", "P33" }),
-				new TournamentDetails("T4", new DateTime(0), TournamentStatus.Current, new[] { "P4" }),
-				new TournamentDetails("T5", new DateTime(0), TournamentStatus.Current, new[] { "P5" })
+				new TournamentDetails(1, "T1", new DateTime(0), TournamentStatus.Finished, null),
+				new TournamentDetails(2, "T2", new DateTime(0), TournamentStatus.Upcomming, new[] { "P21", "P22" }),
+				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Current, new[] { "P31", "P32", "P33" }),
+				new TournamentDetails(4, "T4", new DateTime(0), TournamentStatus.Current, new[] { "P4" }),
+				new TournamentDetails(5, "T5", new DateTime(0), TournamentStatus.Current, new[] { "P5" })
 			};
 
 			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
@@ -244,14 +252,40 @@ namespace WTAScraping.UnitTests.Data
 		}
 
 		[Fact]
+		public void UpdateTournaments_TournamentDoesNotExist_ExceptionIsThrown()
+		{
+			var previousTournaments = new[]
+			{
+				new TournamentDetails(1, "T1", new DateTime(0), TournamentStatus.Finished, null)
+			};
+
+			var updatedTournaments = new[]
+			{
+				new TournamentDetails(2, "T2", new DateTime(0), TournamentStatus.Upcomming, new[] { "P21", "P22" })
+			};
+
+			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
+
+			repositoryMock.Protected()
+				.Setup<IEnumerable<TournamentDetails>>("GetTournaments")
+				.Returns(previousTournaments);
+
+			repositoryMock.Protected()
+				.Setup("SaveTournaments", ItExpr.IsAny<IEnumerable<TournamentDetails>>())
+				.Verifiable();
+
+			Assert.Throws<Exception>(() => repositoryMock.Object.UpdateTournaments(updatedTournaments));
+		}
+
+		[Fact]
 		public void GetTournaments_NoFilter_AllTournamentsAreReturned()
 		{
 			var existingTournaments = new[]
 			{
-				new TournamentDetails("T1", new DateTime(0), TournamentStatus.Finished, new[] { "P1" }),
-				new TournamentDetails("T2", new DateTime(0), TournamentStatus.Finished, new[] { "P2" }),
-				new TournamentDetails("T3", new DateTime(0), TournamentStatus.Current, new[] { "P3" }),
-				new TournamentDetails("T4", new DateTime(0), TournamentStatus.Upcomming, new[] { "P4" })
+				new TournamentDetails(1, "T1", new DateTime(0), TournamentStatus.Finished, new[] { "P1" }),
+				new TournamentDetails(2, "T2", new DateTime(0), TournamentStatus.Finished, new[] { "P2" }),
+				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Current, new[] { "P3" }),
+				new TournamentDetails(4, "T4", new DateTime(0), TournamentStatus.Upcomming, new[] { "P4" })
 			};
 
 			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
@@ -270,16 +304,16 @@ namespace WTAScraping.UnitTests.Data
 		{
 			var expectedTournaments = new[]
 			{
-				new TournamentDetails("T3", new DateTime(0), TournamentStatus.Current, null),
-				new TournamentDetails("T4", new DateTime(0), TournamentStatus.Upcomming, null)
+				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Current, null),
+				new TournamentDetails(4, "T4", new DateTime(0), TournamentStatus.Upcomming, null)
 			};
 
 			var existingTournaments = new[]
 			{
-				new TournamentDetails("T1", new DateTime(0), TournamentStatus.Finished, null),
-				new TournamentDetails("T2", new DateTime(0), TournamentStatus.Finished, null),
-				new TournamentDetails("T3", new DateTime(0), TournamentStatus.Current, null),
-				new TournamentDetails("T4", new DateTime(0), TournamentStatus.Upcomming, null)
+				new TournamentDetails(1, "T1", new DateTime(0), TournamentStatus.Finished, null),
+				new TournamentDetails(2, "T2", new DateTime(0), TournamentStatus.Finished, null),
+				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Current, null),
+				new TournamentDetails(4, "T4", new DateTime(0), TournamentStatus.Upcomming, null)
 			};
 
 			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };

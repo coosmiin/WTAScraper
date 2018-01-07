@@ -7,7 +7,7 @@ namespace WTAScraping.Tournaments
 	{
 		public static TournamentDetails AsTournamentDetails(this Tournament tournament, IEnumerable<string> seededPlayerNames = null)
 		{
-			return new TournamentDetails(tournament.Name, tournament.Date, tournament.Status, seededPlayerNames);
+			return new TournamentDetails(tournament.Id, tournament.Name, tournament.Date, tournament.Status, seededPlayerNames);
 		}
 
 		public static IEnumerable<TournamentDetails> AsTournamentDetails(

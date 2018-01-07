@@ -1,7 +1,9 @@
-﻿namespace WTAScraping.Formatters
+﻿using System;
+
+namespace WTAScraping.Formatters
 {
 	public interface IUrlFormatter
 	{
-		string GetTournamentUrl(string name, int year);
+		string GetTournamentUrl(int id, string name, DateTime date);
 	}
 }

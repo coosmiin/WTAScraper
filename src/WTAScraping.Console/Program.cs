@@ -1,42 +1,49 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using WTAScraping.Data;
 using WTAScraping.Driver;
 using WTAScraping.Tournaments;
-using WTAScraping.Tournaments.Parsers;
 using WTAScraping.Formatters;
 using WTAScraping.Website;
+using WTAScraping.Scraping;
+using WTAScraping.Logging;
 
 namespace WTAScraping.Console
 {
 	class Program
 	{
+		public const string APPLICATION_NAME = "WTA";
+
+		static IWtaWebsite _wtaWebsite;
+
 		static void Main(string[] args)
 		{
 			IWebDriver driver = null;
+			// TODO: do we still need the try/catch?
 			try
 			{
-				var tournamentRepository = new TournamentRepository(args[0]);
-				var playerRepository = new PlayerRepository(args[1]);
+				// var tournamentRepository = new TournamentRepository(args[1]);
+				// driver = new ChromeDriver(AppContext.BaseDirectory);
 
-				driver = new ChromeDriver(AppContext.BaseDirectory);
+				// _wtaWebsite = CreateWtaWebsite();
 
-				var wtaDriver = new WtaDriver(driver, new TournamentDataParser());
-				var wtaWebsite = new WtaWebsite(wtaDriver, new UrlFormatter(), new PlayerNameFormatter());
+				if (args[0] == $"--{Scraper.REFRESH_PLAYERS_COMMAND}")
+				{
+					IScraper scraper =
+						new Scraper(CreateWtaWebsite(), new PlayerRepository(args[1]), new IftttLogger(APPLICATION_NAME));
+					scraper.RefreshPlayers();
 
-				playerRepository.SavePlayers(wtaWebsite.GetPlayers());
-				var players = playerRepository.GetPlayers();
+					return;
+				}
 
-				RefreshTournamentsData(wtaWebsite, tournamentRepository);
+				// RefreshTournamentsData(_wtaWebsite, tournamentRepository);
 
+				// var players = playerRepository.GetPlayers();
 				// PrintPlayers(driver);
 			}
 			catch (Exception ex)
@@ -90,6 +97,13 @@ namespace WTAScraping.Console
 			IConfigurationRoot configuration = builder.Build();
 
 			return configuration;
+		}
+
+		private static IWtaWebsite CreateWtaWebsite()
+		{
+			return 
+				new WtaWebsite(
+					new WtaDriverFactory(AppContext.BaseDirectory), new UrlFormatter(), new PlayerNameFormatter());
 		}
 	}
 }

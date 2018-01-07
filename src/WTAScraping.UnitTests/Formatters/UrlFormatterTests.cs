@@ -1,4 +1,5 @@
-﻿using WTAScraping.Formatters;
+﻿using System;
+using WTAScraping.Formatters;
 using Xunit;
 
 namespace WTAScraping.UnitTests.Formatters
@@ -10,9 +11,19 @@ namespace WTAScraping.UnitTests.Formatters
 		{
 			var urlFormatter = new UrlFormatter();
 
-			var url = urlFormatter.GetTournamentUrl("Quebec City", 2017);
+			var url = urlFormatter.GetTournamentUrl(123, "Quebec City", new DateTime(2017, 10, 13));
 
-			Assert.Equal("2017-quebec-city", url);
+			Assert.Equal("2017-quebec-city-123", url);
+		}
+
+		[Fact]
+		public void GetTournamentUrl_TwoDaysBeforeEndOfYear_UrlContainsNextYear()
+		{
+			var urlFormatter = new UrlFormatter();
+
+			var url = urlFormatter.GetTournamentUrl(123, "Quebec City", new DateTime(2017, 12, 30));
+
+			Assert.Equal("2018-quebec-city-123", url);
 		}
 	}
 }

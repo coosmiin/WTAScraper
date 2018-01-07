@@ -14,6 +14,12 @@ namespace WTAScraping.UnitTests.Tournaments.Parsers
 		}
 
 		[Fact]
+		public void ParseId_ValidUrl_IdIsParsed()
+		{
+			Assert.Equal(123, _parser.ParseId("http://www.wtatennis.com/tournament/2017-dalian-123"));
+		}
+
+		[Fact]
 		public void ParseDate_DateWithTimeZone_TimeZoneIsIgnored()
 		{
 			var expectedDate = new DateTime(2017, 8, 28);
@@ -24,13 +30,19 @@ namespace WTAScraping.UnitTests.Tournaments.Parsers
 		[Fact]
 		public void ParseName_ValidUrl_NameIsParsed()
 		{
-			Assert.Equal("Dalian", _parser.ParseName("http://www.wtatennis.com/tournament/2017-dalian#draws"));
+			Assert.Equal("Dalian", _parser.ParseName("http://www.wtatennis.com/tournament/2017-dalian-123"));
 		}
 
 		[Fact]
 		public void ParseName_TournamentWithTwoLetterAcronims_TheAcronimIsUppercase()
 		{
-			Assert.Equal("US Open", _parser.ParseName("http://www.wtatennis.com/tournament/2017-us-open#draws"));
+			Assert.Equal("US Open", _parser.ParseName("http://www.wtatennis.com/tournament/2017-us-open-123"));
+		}
+
+		[Fact]
+		public void ParseName_TournamentWithOnlyUpperLetters_NameIsParsedAsPascalCase()
+		{
+			Assert.Equal("Wuhan", _parser.ParseName("http://www.wtatennis.com/tournament/2017-WUHAN-123"));
 		}
 	}
 }

@@ -6,7 +6,14 @@ namespace WTAScraping.Tournaments.Parsers
 {
 	public class TournamentDataParser : ITournamentDataParser
 	{
-		private readonly Regex _tournamentNameUrlRegex = new Regex(@"http:\/\/www\.wtatennis\.com\/tournament\/(.*)#draws");
+		private readonly Regex _tournamentNameUrlRegex = new Regex(@"http:\/\/www\.wtatennis\.com\/tournament\/(.*)-(\d{1,})");
+
+		public int ParseId(string tournamentUrl)
+		{
+			int id = int.Parse(_tournamentNameUrlRegex.Match(tournamentUrl).Groups[2].Value);
+
+			return id;
+		}
 
 		public DateTime ParseDate(string date)
 		{
@@ -22,7 +29,7 @@ namespace WTAScraping.Tournaments.Parsers
 				string.Join(
 					" ",
 					urlParts.Skip(1).Select(
-						u => u.Length <= 2 ? u.ToUpper() : string.Format($"{u.Substring(0, 1).ToUpper()}{u.Substring(1)}")));
+						u => u.Length <= 2 ? u.ToUpper() : string.Format($"{u.Substring(0, 1).ToUpper()}{u.Substring(1).ToLower()}")));
 
 			return name;
 		}

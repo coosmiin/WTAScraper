@@ -17,12 +17,14 @@ namespace WTAScraping.UnitTests.Website
 		public void RefreshSeededPlayers_CurrentTournamentsWithoutDrawsBecomeInvalid()
 		{
 			var tournaments =
-				new List<Tournament> { new Tournament("T1", new DateTime(2017, 1, 1), TournamentStatus.Current) };
+				new List<Tournament> { new Tournament(1, "T1", new DateTime(2017, 1, 1), TournamentStatus.Current) };
 
 			var driverStub = Mock.Of<IWtaDriver>(d => 
 				d.GetTournamentPlayers(It.IsAny<string>()) == Enumerable.Empty<SeededPlayer>());
 
-			var website = new WtaWebsite(driverStub, new UrlFormatter(), new PlayerNameFormatter());
+			var driverFactoryStub = Mock.Of<IWtaDriverFactory>(f => f.CreateDriver() == driverStub);
+
+			var website = new WtaWebsite(driverFactoryStub, new UrlFormatter(), new PlayerNameFormatter());
 
 			var tournamentsDetails = website.RefreshSeededPlayers(tournaments.AsTournamentDetails());
 
@@ -33,12 +35,14 @@ namespace WTAScraping.UnitTests.Website
 		public void RefreshSeededPlayers_UpcommingTournamentsWithoutDrawsDontChangeStatus()
 		{
 			var tournaments =
-				new List<Tournament> { new Tournament("T1", new DateTime(2017, 1, 1), TournamentStatus.Upcomming) };
+				new List<Tournament> { new Tournament(1, "T1", new DateTime(2017, 1, 1), TournamentStatus.Upcomming) };
 
 			var driverStub = Mock.Of<IWtaDriver>(d =>
 				d.GetTournamentPlayers(It.IsAny<string>()) == Enumerable.Empty<SeededPlayer>());
 
-			var website = new WtaWebsite(driverStub, new UrlFormatter(), new PlayerNameFormatter());
+			var driverFactoryStub = Mock.Of<IWtaDriverFactory>(f => f.CreateDriver() == driverStub);
+
+			var website = new WtaWebsite(driverFactoryStub, new UrlFormatter(), new PlayerNameFormatter());
 
 			var tournamentsDetails = website.RefreshSeededPlayers(tournaments.AsTournamentDetails());
 
@@ -51,21 +55,23 @@ namespace WTAScraping.UnitTests.Website
 			var tournaments =
 				new List<Tournament>
 				{
-					new Tournament("T1", new DateTime(2017, 1, 1), TournamentStatus.Upcomming),
-					new Tournament("T3", new DateTime(2017, 1, 1), TournamentStatus.Current)
+					new Tournament(1, "T1", new DateTime(2017, 1, 1), TournamentStatus.Upcomming),
+					new Tournament(3, "T3", new DateTime(2017, 1, 1), TournamentStatus.Current)
 				};
 
 			var driverStub = Mock.Of<IWtaDriver>(d =>
-				d.GetTournamentPlayers("2017T1") == 
+				d.GetTournamentPlayers("2017T11") == 
 					new[] { new SeededPlayer("P2", 2), new SeededPlayer("P3", 3), new SeededPlayer("P1", 1) } &&
-				d.GetTournamentPlayers("2017T3") == new[] { new SeededPlayer("P4", 1) });
+				d.GetTournamentPlayers("2017T33") == new[] { new SeededPlayer("P4", 1) });
+
+			var driverFactoryStub = Mock.Of<IWtaDriverFactory>(f => f.CreateDriver() == driverStub);
 
 			var urlFormatterMock = new Mock<IUrlFormatter>();
 			urlFormatterMock
-				.Setup(u => u.GetTournamentUrl(It.IsAny<string>(), It.IsAny<int>()))
-				.Returns((string n, int y) => y + n);
+				.Setup(u => u.GetTournamentUrl(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<DateTime>()))
+				.Returns((int i, string n, DateTime d) => d.Year + n + i);
 
-			var website = new WtaWebsite(driverStub, urlFormatterMock.Object, new PlayerNameFormatter());
+			var website = new WtaWebsite(driverFactoryStub, urlFormatterMock.Object, new PlayerNameFormatter());
 
 			var tournamentsDetails = website.RefreshSeededPlayers(tournaments.AsTournamentDetails()).ToArray();
 
@@ -79,13 +85,15 @@ namespace WTAScraping.UnitTests.Website
 		public void RefreshSeededPlayers_TournamentsWithDraws_NonSeededPlayersAreNotReturned()
 		{
 			var tournaments =
-				new List<Tournament> { new Tournament("T1", new DateTime(2017, 1, 1), TournamentStatus.Current) };
+				new List<Tournament> { new Tournament(1, "T1", new DateTime(2017, 1, 1), TournamentStatus.Current) };
 
 			var driverStub = Mock.Of<IWtaDriver>(d =>
 				d.GetTournamentPlayers(It.IsAny<string>()) ==
 					new[] { new SeededPlayer("P2", 2), new SeededPlayer("P3", SeededPlayer.MAX_SEED), new SeededPlayer("P1", 1) });
 
-			var website = new WtaWebsite(driverStub, new UrlFormatter(), new PlayerNameFormatter());
+			var driverFactoryStub = Mock.Of<IWtaDriverFactory>(f => f.CreateDriver() == driverStub);
+
+			var website = new WtaWebsite(driverFactoryStub, new UrlFormatter(), new PlayerNameFormatter());
 
 			var tournamentsDetails = website.RefreshSeededPlayers(tournaments.AsTournamentDetails()).ToArray();
 

@@ -33,7 +33,7 @@ namespace WTAScraping.Data
 			allTournaments = 
 				allTournaments.Concat(tournaments)
 					.ToLookup(t => t.Name)
-					.Select(g => g.Aggregate((t1, t2) => new TournamentDetails(t1.Name, t2.Date, t2.Status, t1.SeededPlayerNames)))
+					.Select(g => g.Aggregate((t1, t2) => new TournamentDetails(t1.Id, t1.Name, t2.Date, t2.Status, t1.SeededPlayerNames)))
 					.ToList();
 
 			SaveTournaments(allTournaments.OrderByDescending(t => t.Date));
@@ -45,7 +45,12 @@ namespace WTAScraping.Data
 
 			foreach (var tournamentDetails in tournamentsDetails)
 			{
-				tournaments[Array.FindIndex(tournaments, t => t.Name == tournamentDetails.Name)] = tournamentDetails;
+				int index = Array.FindIndex(tournaments, t => t.Name == tournamentDetails.Name);
+
+				if (index < 0)
+					throw new Exception($"Tournament '{tournamentDetails.Name}' was not found and therefore cannot be updated.");
+
+				tournaments[index] = tournamentDetails;
 			}
 
 			SaveTournaments(tournaments.OrderByDescending(t => t.Date));
@@ -63,6 +68,9 @@ namespace WTAScraping.Data
 
 		protected virtual IEnumerable<TournamentDetails> GetTournaments()
 		{
+			if (!File.Exists(_filePath))
+				return Enumerable.Empty<TournamentDetails>();
+
 			return JsonConvert.DeserializeObject<IEnumerable<TournamentDetails>>(File.ReadAllText(_filePath));
 		}
 

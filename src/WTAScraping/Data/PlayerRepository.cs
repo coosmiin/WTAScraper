@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using WTAScraping.Players;
 
 namespace WTAScraping.Data
@@ -16,6 +17,9 @@ namespace WTAScraping.Data
 
 		public IEnumerable<Player> GetPlayers()
 		{
+			if (!File.Exists(_filePath))
+				return Enumerable.Empty<Player>();
+
 			return JsonConvert.DeserializeObject<IEnumerable<Player>>(File.ReadAllText(_filePath));
 		}
 

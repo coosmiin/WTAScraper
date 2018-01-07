@@ -8,8 +8,8 @@ namespace WTAScraping.Tournaments
 	{
 		public IEnumerable<string> SeededPlayerNames { get; }
 
-		public TournamentDetails(string name, DateTime date, TournamentStatus status, IEnumerable<string> seededPlayerNames)
-			: base(name, date, status)
+		public TournamentDetails(int id, string name, DateTime date, TournamentStatus status, IEnumerable<string> seededPlayerNames)
+			: base(id, name, date, status)
 		{
 			SeededPlayerNames = seededPlayerNames;
 		}

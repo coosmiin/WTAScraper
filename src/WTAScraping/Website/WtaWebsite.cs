@@ -16,25 +16,47 @@ namespace WTAScraping.Website
 	{
 		private const string RANKINGS_URL = "http://www.wtatennis.com/rankings";
 
+		private static object _lock = new object();
+
 		private readonly Regex _rankingsInstantRegex = new Regex(@"http:\\\/\\\/www\.wtatennis\.com\\\/node\\\/(.*)\\\/singles\\\/ranking\.json", RegexOptions.Compiled);
 		private readonly Regex _playerNameRegex = new Regex("<div class=\"player-hidden\">(.*)<\\/div>", RegexOptions.Compiled);
 
 		private readonly string _rankingsJsonUrlFormat = "http://www.wtatennis.com/node/{0}/singles/ranking.json";
 
-		private readonly IWtaDriver _driver;
+		private readonly IWtaDriverFactory _driverFactory;
 		private readonly IUrlFormatter _urlFormatter;
 		private readonly IPlayerNameFormatter _playerNameFormatter;
 
-		public WtaWebsite(IWtaDriver driver, IUrlFormatter urlFormatter, IPlayerNameFormatter playerNameFormatter)
+		private IWtaDriver _wtaDriver;
+
+		private IWtaDriver WtaDriver
 		{
-			_driver = driver;
+			get
+			{
+				if (_wtaDriver == null)
+				{
+					lock (_lock)
+					{
+						if (_wtaDriver == null)
+						{
+							_wtaDriver = _driverFactory.CreateDriver();
+						}
+					}
+				}
+				return _wtaDriver;
+			}
+		}
+
+		public WtaWebsite(IWtaDriverFactory driverFactory, IUrlFormatter urlFormatter, IPlayerNameFormatter playerNameFormatter)
+		{
+			_driverFactory = driverFactory;
 			_urlFormatter = urlFormatter;
 			_playerNameFormatter = playerNameFormatter;
 		}
 
 		public IEnumerable<Tournament> GetCurrentAndUpcomingTournaments()
 		{
-			IEnumerable<Tournament> tournaments = _driver.GetCurrentAndUpcomingTournaments();
+			IEnumerable<Tournament> tournaments = WtaDriver.GetCurrentAndUpcomingTournaments();
 
 			return tournaments;
 		}
@@ -44,7 +66,8 @@ namespace WTAScraping.Website
 			foreach (TournamentDetails tournament in tournamentsDetails)
 			{
 				IEnumerable<SeededPlayer> players =
-					_driver.GetTournamentPlayers(_urlFormatter.GetTournamentUrl(tournament.Name, tournament.Date.Year));
+					WtaDriver.GetTournamentPlayers(
+						_urlFormatter.GetTournamentUrl(tournament.Id, tournament.Name, tournament.Date));
 
 				if (!players.Any() && tournament.Status == TournamentStatus.Current)
 				{
