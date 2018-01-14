@@ -7,6 +7,8 @@ namespace WTAScraping.Logging
 {
 	public class IftttLogger : ILogger
 	{
+		public const string LOGGER_NAME = "iftt";
+
 		private const string IFTTT_WEBHOOKS_NOTIFY_URL = "https://maker.ifttt.com/trigger/notify/with/key/cPfYg95gCwnZNenoxR7mia";
 		private readonly string _applicationName;
 
