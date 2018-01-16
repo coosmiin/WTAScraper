@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <UserSecretsId>coosm-c23d27a4-eb88</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="debug.log" />
+    <None Remove="players.json" />
+    <None Remove="tournaments.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WTAScraper\WTAScraper.csproj" />
+  </ItemGroup>
+
+</Project>
