@@ -44,5 +44,11 @@ namespace WTAScraper.UnitTests.Tournaments.Parsers
 		{
 			Assert.Equal("Wuhan", _parser.ParseName("http://www.wtatennis.com/tournament/2017-WUHAN-123"));
 		}
+
+		[Fact]
+		public void ParseName_UpperCaseUrlPart_NameIsParsedCorrectly()
+		{
+			Assert.Equal("Australian Open Australia", _parser.ParseName("http://www.wtatennis.com/TOURNAMENT/2018-AUSTRALIAN-OPEN-AUSTRALIA-901"));
+		}
 	}
 }

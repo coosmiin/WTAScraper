@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using System.Net;
+﻿using System.Net;
 using System.Net.Mail;
 
 namespace WTAScraper.Logging
@@ -9,33 +8,22 @@ namespace WTAScraper.Logging
 		public const string LOGGER_NAME = "email";
 
 		private readonly string _applicationName;
+		private readonly EmailSettings _settings;
 
-		public EmailLogger(string applicationName)
+		public EmailLogger(string applicationName, EmailSettings settings)
 		{
 			_applicationName = applicationName;
+			_settings = settings;
 		}
 
 		public void Log(string eventName, string message)
 		{
-			IConfigurationRoot configuration = BuildConfiguration();
+			var smtp = new SmtpClient(_settings.SmtpHost, _settings.SmtpPort);
 
-			var smtp = new SmtpClient("smtp.live.com", 587);
-
-			smtp.Credentials = new NetworkCredential(configuration["OutlookUsername"], configuration["OutlookPassword"]);
+			smtp.Credentials = new NetworkCredential(_settings.SmtpUsername, _settings.SmtpPassword);
 			smtp.EnableSsl = true;
 
-			smtp.Send(configuration["OutlookSenderAddress"], configuration["OutlookToAddress"], eventName, message);
-		}
-
-		private static IConfigurationRoot BuildConfiguration()
-		{
-			IConfigurationBuilder builder = new ConfigurationBuilder();
-
-			builder.AddUserSecrets<T>();
-
-			IConfigurationRoot configuration = builder.Build();
-
-			return configuration;
+			smtp.Send(_settings.EmailSenderAddress, _settings.EmailToAddress, eventName, message);
 		}
 	}
 }

@@ -9,12 +9,14 @@ namespace WTAScraper.Logging
 	{
 		public const string LOGGER_NAME = "ifttt";
 
-		private const string IFTTT_WEBHOOKS_NOTIFY_URL = "https://maker.ifttt.com/trigger/notify/with/key/cPfYg95gCwnZNenoxR7mia";
+		private const string IFTTT_WEBHOOKS_NOTIFY_URL_FORMAT = "https://maker.ifttt.com/trigger/notify/with/key/{0}";
 		private readonly string _applicationName;
+		private readonly string _iftttKey;
 
-		public IftttLogger(string applicationName)
+		public IftttLogger(string applicationName, string iftttKey)
 		{
 			_applicationName = applicationName;
+			_iftttKey = iftttKey;
 		}
 
 		public void Log(string eventName, string message)
@@ -29,7 +31,7 @@ namespace WTAScraper.Logging
 			};
 
 			httpClient.PostAsync(
-				IFTTT_WEBHOOKS_NOTIFY_URL, 
+				string.Format(IFTTT_WEBHOOKS_NOTIFY_URL_FORMAT, _iftttKey),
 				new StringContent(
 					JsonConvert.SerializeObject(
 						content, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }), 

@@ -5,12 +5,17 @@ using WTAScraper.Formatters;
 using WTAScraper.Website;
 using WTAScraper.Scraping;
 using WTAScraper.Logging;
+using WTAScraper.Console.Configuration;
 
 namespace WTAScraper.Console
 {
 	class Program
 	{
 		public const string APPLICATION_NAME = "WTA";
+		public const string LOGGER_COMMAND_PARAMETER = "-l";
+
+		public const string SMTP_HOST = "smtp.live.com";
+		public const int SMTP_PORT = 587;
 
 		static void Main(string[] args)
 		{
@@ -22,15 +27,24 @@ namespace WTAScraper.Console
 				IWtaWebsite wtaWebsite =
 					new WtaWebsite(wtaDriverFactory, new UrlFormatter(), new PlayerNameFormatter());
 
-				if (args[2] == "-l")
+				ISecretStore secretStore = new LocalSecretStore<Program>();
+
+				if (args[2] == LOGGER_COMMAND_PARAMETER)
 				{
 					switch (args[3])
 					{
 						case IftttLogger.LOGGER_NAME:
-							logger = new IftttLogger(APPLICATION_NAME);
+							logger = new IftttLogger(APPLICATION_NAME, secretStore.GetIftttKey());
 							break;
+
 						case EmailLogger<Program>.LOGGER_NAME:
-							logger = new EmailLogger<Program>(APPLICATION_NAME);
+							var emailSettings =
+								new EmailSettings(
+									SMTP_HOST, SMTP_PORT,
+									secretStore.GetSmtpUserName(), secretStore.GetSmtpPassword(), 
+									secretStore.GetEmailSenderAddress(), secretStore.GetEmailToAddress());
+									
+							logger = new EmailLogger<Program>(APPLICATION_NAME, emailSettings);
 							break;
 					}
 				}

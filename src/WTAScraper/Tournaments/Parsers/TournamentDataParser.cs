@@ -6,7 +6,8 @@ namespace WTAScraper.Tournaments.Parsers
 {
 	public class TournamentDataParser : ITournamentDataParser
 	{
-		private readonly Regex _tournamentNameUrlRegex = new Regex(@"http:\/\/www\.wtatennis\.com\/tournament\/(.*)-(\d{1,})");
+		private readonly Regex _tournamentNameUrlRegex = 
+			new Regex(@"http:\/\/www\.wtatennis\.com\/tournament\/(.*)-(\d{1,})", RegexOptions.IgnoreCase);
 
 		public int ParseId(string tournamentUrl)
 		{
