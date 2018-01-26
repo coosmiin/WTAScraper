@@ -6,6 +6,7 @@ using WTAScraper.Website;
 using WTAScraper.Scraping;
 using WTAScraper.Logging;
 using WTAScraper.Console.Configuration;
+using SecretStore;
 
 namespace WTAScraper.Console
 {
@@ -34,15 +35,17 @@ namespace WTAScraper.Console
 					switch (args[3])
 					{
 						case IftttLogger.LOGGER_NAME:
-							logger = new IftttLogger(APPLICATION_NAME, secretStore.GetIftttKey());
+							logger = new IftttLogger(APPLICATION_NAME, secretStore.GetSecret(SecretStoreKeys.IFTTT_KEY));
 							break;
 
 						case EmailLogger<Program>.LOGGER_NAME:
 							var emailSettings =
 								new EmailSettings(
 									SMTP_HOST, SMTP_PORT,
-									secretStore.GetSmtpUserName(), secretStore.GetSmtpPassword(), 
-									secretStore.GetEmailSenderAddress(), secretStore.GetEmailToAddress());
+									secretStore.GetSecret(SecretStoreKeys.OUTLOOK_USERNAME_KEY), 
+									secretStore.GetSecret(SecretStoreKeys.OUTLOOK_PASSWORD_KEY), 
+									secretStore.GetSecret(SecretStoreKeys.OUTLOOK_SENDER_ADDRESS_KEY), 
+									secretStore.GetSecret(SecretStoreKeys.OUTLOOK_TO_ADDRESS_KEY));
 									
 							logger = new EmailLogger<Program>(APPLICATION_NAME, emailSettings);
 							break;

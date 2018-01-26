@@ -58,7 +58,7 @@ namespace WTAScraper.Scraping
 			_tournamentRepository
 				.GetTournaments(
 					t => t.Status == TournamentStatus.Current 
-						|| (t.Date < _currentDate.AddDays(2) 
+						|| ((t.Date < _currentDate.AddDays(2) && (t.Date > _currentDate.AddDays(-2)))
 							&& (t.Status == TournamentStatus.Upcomming || t.Status == TournamentStatus.Invalid)));
 
 			return
