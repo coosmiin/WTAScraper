@@ -10,10 +10,12 @@ namespace WTAScraper.Data
 	public class TournamentRepository : ITournamentRepository
 	{
 		private readonly string _filePath;
+		private readonly DateTime _currentDate;
 
-		public TournamentRepository(string filePath)
+		public TournamentRepository(string filePath, DateTime currentDate)
 		{
 			_filePath = filePath;
+			_currentDate = currentDate;
 		}
 
 		public void AddTournaments(IEnumerable<TournamentDetails> tournaments)
@@ -24,7 +26,7 @@ namespace WTAScraper.Data
 
 			allTournaments.ForEach(t =>
 			{
-				if (!tournamentsNames.Contains(t.Name))
+				if (!tournamentsNames.Contains(t.Name) && t.Date.AddDays(1) < _currentDate)
 				{
 					t.Status = TournamentStatus.Finished;
 				}

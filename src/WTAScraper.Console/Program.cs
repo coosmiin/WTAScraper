@@ -64,7 +64,8 @@ namespace WTAScraper.Console
 				if (args[0] == $"--{RefreshTournamentsScrapeCommand.REFRESH_TOURNAMENTS_COMMAND}")
 				{
 					IScrapeCommand scraper =
-						new RefreshTournamentsScrapeCommand(wtaWebsite, new TournamentRepository(args[1]), logger, DateTime.Now);
+						new RefreshTournamentsScrapeCommand(
+							wtaWebsite, new TournamentRepository(args[1], DateTime.Now), logger, DateTime.Now);
 					scraper.RefreshData();
 
 					return;

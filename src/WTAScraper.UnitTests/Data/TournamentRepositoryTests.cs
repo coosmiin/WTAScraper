@@ -14,7 +14,7 @@ namespace WTAScraper.UnitTests.Data
 		[Fact]
 		public void GetTournaments_FileDoesNotExist_ReturnsEmptyCollection()
 		{
-			var repository = new TournamentRepository("does_not_exist.json");
+			var repository = new TournamentRepository("does_not_exist.json", new DateTime(2000, 1, 20));
 
 			Assert.Empty(repository.GetTournaments());
 		}
@@ -27,7 +27,7 @@ namespace WTAScraper.UnitTests.Data
 				new TournamentDetails(1, "T1", DateTime.Now, TournamentStatus.Finished, new[] { "P1" }),
 				new TournamentDetails(2, "T2", DateTime.Now, TournamentStatus.Current, new[] { "P2" })
 			};
-			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
+			Mock<TournamentRepository> repositoryMock = GetTournamentRepositoryMock();
 
 			repositoryMock.Protected()
 				.Setup<IEnumerable<TournamentDetails>>("GetTournaments")
@@ -56,7 +56,7 @@ namespace WTAScraper.UnitTests.Data
 				new TournamentDetails(2, "T2", DateTime.Now, TournamentStatus.Current, null),
 				new TournamentDetails(3, "T3", DateTime.Now, TournamentStatus.Current, null)
 			};
-			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
+			Mock<TournamentRepository> repositoryMock = GetTournamentRepositoryMock();
 
 			repositoryMock.Protected()
 				.Setup<IEnumerable<TournamentDetails>>("GetTournaments")
@@ -98,7 +98,7 @@ namespace WTAScraper.UnitTests.Data
 				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Upcomming, new[] { "P3" })
 			};
 
-			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
+			Mock<TournamentRepository> repositoryMock = GetTournamentRepositoryMock();
 
 			repositoryMock.Protected()
 				.Setup<IEnumerable<TournamentDetails>>("GetTournaments")
@@ -119,12 +119,12 @@ namespace WTAScraper.UnitTests.Data
 		}
 
 		[Fact]
-		public void AddTournaments_FinishedTournaments_StatusIsChangedToFinished()
+		public void AddTournaments_TournamentNotFound_DateIsBeforeCurrent_StatusIsChangedToFinished()
 		{
 			var previousTournaments = new[]
 			{
-				new TournamentDetails(1, "T1", new DateTime(0), TournamentStatus.Current, null),
-				new TournamentDetails(2, "T2", new DateTime(0), TournamentStatus.Upcomming, null),
+				new TournamentDetails(1, "T1", new DateTime(2000, 1, 18), TournamentStatus.Current, null),
+				new TournamentDetails(2, "T2", new DateTime(2000, 1, 17), TournamentStatus.Upcomming, null),
 				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Current, null)
 			};
 
@@ -136,13 +136,56 @@ namespace WTAScraper.UnitTests.Data
 
 			var expectedTournaments = new[]
 			{
-				new TournamentDetails(1, "T1", new DateTime(0), TournamentStatus.Finished, null),
-				new TournamentDetails(2, "T2", new DateTime(0), TournamentStatus.Finished, null),
+				new TournamentDetails(1, "T1", new DateTime(2000, 1, 18), TournamentStatus.Finished, null),
+				new TournamentDetails(2, "T2", new DateTime(2000, 1, 17), TournamentStatus.Finished, null),
 				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Current, null),
 				new TournamentDetails(4, "T4", new DateTime(0), TournamentStatus.Current, null)
 			};
 
-			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
+			Mock<TournamentRepository> repositoryMock = GetTournamentRepositoryMock();
+
+			repositoryMock.Protected()
+				.Setup<IEnumerable<TournamentDetails>>("GetTournaments")
+				.Returns(previousTournaments);
+
+			var savedTournaments = Enumerable.Empty<TournamentDetails>();
+
+			repositoryMock.Protected()
+				.Setup("SaveTournaments", ItExpr.IsAny<IEnumerable<TournamentDetails>>())
+				.Callback<IEnumerable<TournamentDetails>>(tournaments => savedTournaments = tournaments)
+				.Verifiable();
+
+			repositoryMock.Object.AddTournaments(newTournaments);
+
+			repositoryMock.Protected().Verify("SaveTournaments", Times.Once(), ItExpr.IsAny<IEnumerable<TournamentDetails>>());
+			Assert.Equal(expectedTournaments, savedTournaments);
+		}
+
+		[Fact]
+		public void AddTournaments_TournamentNotFound_DateIsAfterCurrent_StatusIsNotChangedToFinished()
+		{
+			var previousTournaments = new[]
+			{
+				new TournamentDetails(1, "T1", new DateTime(2000, 1, 19), TournamentStatus.Current, null),
+				new TournamentDetails(2, "T2", new DateTime(2000, 1, 21), TournamentStatus.Upcomming, null),
+				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Current, null)
+			};
+
+			var newTournaments = new[]
+			{
+				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Current, null),
+				new TournamentDetails(4, "T4", new DateTime(0), TournamentStatus.Current, null)
+			};
+
+			var expectedTournaments = new[]
+			{
+				new TournamentDetails(1, "T2", new DateTime(2000, 1, 21), TournamentStatus.Upcomming, null),
+				new TournamentDetails(2, "T1", new DateTime(2000, 1, 19), TournamentStatus.Current, null),
+				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Current, null),
+				new TournamentDetails(4, "T4", new DateTime(0), TournamentStatus.Current, null)
+			};
+
+			Mock<TournamentRepository> repositoryMock = GetTournamentRepositoryMock();
 
 			repositoryMock.Protected()
 				.Setup<IEnumerable<TournamentDetails>>("GetTournaments")
@@ -185,7 +228,7 @@ namespace WTAScraper.UnitTests.Data
 				new TournamentDetails(4, "T4", new DateTime(0), TournamentStatus.Current, null)
 			};
 
-			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
+			Mock<TournamentRepository> repositoryMock = GetTournamentRepositoryMock();
 
 			repositoryMock.Protected()
 				.Setup<IEnumerable<TournamentDetails>>("GetTournaments")
@@ -232,7 +275,7 @@ namespace WTAScraper.UnitTests.Data
 				new TournamentDetails(5, "T5", new DateTime(0), TournamentStatus.Current, new[] { "P5" })
 			};
 
-			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
+			Mock<TournamentRepository> repositoryMock = GetTournamentRepositoryMock();
 
 			repositoryMock.Protected()
 				.Setup<IEnumerable<TournamentDetails>>("GetTournaments")
@@ -264,7 +307,7 @@ namespace WTAScraper.UnitTests.Data
 				new TournamentDetails(2, "T2", new DateTime(0), TournamentStatus.Upcomming, new[] { "P21", "P22" })
 			};
 
-			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
+			Mock<TournamentRepository> repositoryMock = GetTournamentRepositoryMock();
 
 			repositoryMock.Protected()
 				.Setup<IEnumerable<TournamentDetails>>("GetTournaments")
@@ -288,7 +331,7 @@ namespace WTAScraper.UnitTests.Data
 				new TournamentDetails(4, "T4", new DateTime(0), TournamentStatus.Upcomming, new[] { "P4" })
 			};
 
-			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
+			Mock<TournamentRepository> repositoryMock = GetTournamentRepositoryMock();
 
 			repositoryMock.Protected()
 				.Setup<IEnumerable<TournamentDetails>>("GetTournaments")
@@ -315,17 +358,21 @@ namespace WTAScraper.UnitTests.Data
 				new TournamentDetails(3, "T3", new DateTime(0), TournamentStatus.Current, null),
 				new TournamentDetails(4, "T4", new DateTime(0), TournamentStatus.Upcomming, null)
 			};
-
-			var repositoryMock = new Mock<TournamentRepository>(string.Empty) { CallBase = true };
+			Mock<TournamentRepository> repositoryMock = GetTournamentRepositoryMock();
 
 			repositoryMock.Protected()
 				.Setup<IEnumerable<TournamentDetails>>("GetTournaments")
 				.Returns(existingTournaments);
 
-			var filteredTournaments = 
+			var filteredTournaments =
 				repositoryMock.Object.GetTournaments(t => t.Status == TournamentStatus.Current || t.Status == TournamentStatus.Upcomming);
 
 			Assert.Equal(expectedTournaments, filteredTournaments);
+		}
+
+		private static Mock<TournamentRepository> GetTournamentRepositoryMock()
+		{
+			return new Mock<TournamentRepository>(string.Empty, new DateTime(2000, 1, 20)) { CallBase = true };
 		}
 	}
 }
