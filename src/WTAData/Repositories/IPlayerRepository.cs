@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using WTAScraper.Players;
+using WTAData.Players;
 
-namespace WTAScraper.Data
+namespace WTAData.Repositories
 {
 	public interface IPlayerRepository
 	{

@@ -6,8 +6,8 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using WTAScraper.Driver;
-using WTAScraper.Players;
-using WTAScraper.Tournaments;
+using WTAData.Players;
+using WTAData.Tournaments;
 using WTAScraper.Formatters;
 
 namespace WTAScraper.Website

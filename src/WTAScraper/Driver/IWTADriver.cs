@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using WTAScraper.Players;
-using WTAScraper.Tournaments;
+using WTAData.Players;
+using WTAData.Tournaments;
 
 namespace WTAScraper.Driver
 {

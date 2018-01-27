@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using WTAScraper.Players;
+using WTAData.Players;
 
-namespace WTAScraper.Data
+namespace WTAData.Repositories
 {
 	public class PlayerRepository : IPlayerRepository
 	{

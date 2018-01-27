@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using WTAScraper.Tournaments;
+using WTAData.Tournaments;
 
-namespace WTAScraper.Data
+namespace WTAData.Repositories
 {
 	public class TournamentRepository : ITournamentRepository
 	{

@@ -1,5 +1,5 @@
 ﻿using System;
-using WTAScraper.Data;
+using WTAData.Repositories;
 using WTAScraper.Driver;
 using WTAScraper.Formatters;
 using WTAScraper.Website;

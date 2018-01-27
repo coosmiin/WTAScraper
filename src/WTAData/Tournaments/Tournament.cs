@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
-using WTAScraper.JsonConverters;
+using WTAData.JsonConverters;
 
-namespace WTAScraper.Tournaments
+namespace WTAData.Tournaments
 {
 	public class Tournament
 	{

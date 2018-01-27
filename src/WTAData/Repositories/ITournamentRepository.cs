@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using WTAScraper.Tournaments;
+using WTAData.Tournaments;
 
-namespace WTAScraper.Data
+namespace WTAData.Repositories
 {
 	public interface ITournamentRepository
 	{

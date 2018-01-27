@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using WTAScraper.Data;
+using WTAData.Repositories;
 using Logging;
-using WTAScraper.Tournaments;
+using WTAData.Tournaments;
 using WTAScraper.Website;
 
 namespace WTAScraper.Scraping

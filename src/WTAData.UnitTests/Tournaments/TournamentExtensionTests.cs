@@ -1,7 +1,8 @@
 using System;
+using WTAData.Tournaments;
 using Xunit;
 
-namespace WTAScraper.Tournaments.UnitTests
+namespace WTAData.UnitTests.Tournaments
 {
 	public class TournamentExtensionTests
 	{

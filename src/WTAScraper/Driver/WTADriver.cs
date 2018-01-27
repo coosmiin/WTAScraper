@@ -2,8 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using WTAScraper.Players;
-using WTAScraper.Tournaments;
+using WTAData.Players;
+using WTAData.Tournaments;
 using WTAScraper.Tournaments.Parsers;
 
 namespace WTAScraper.Driver

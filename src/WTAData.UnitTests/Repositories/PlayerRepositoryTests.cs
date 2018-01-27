@@ -1,13 +1,7 @@
-﻿using Moq;
-using Moq.Protected;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using WTAScraper.Data;
-using WTAScraper.Tournaments;
+﻿using WTAData.Repositories;
 using Xunit;
 
-namespace WTAScraper.UnitTests.Data
+namespace WTAData.UnitTests.Repositories
 {
 	public class PlayerRepositoryTests
 	{

@@ -10,4 +10,8 @@
     <PackageReference Include="Selenium.WebDriver" Version="3.8.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\WTAData\WTAData.csproj" />
+  </ItemGroup>
+
 </Project>

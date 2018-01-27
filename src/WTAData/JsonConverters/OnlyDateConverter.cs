@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Converters;
 
-namespace WTAScraper.JsonConverters
+namespace WTAData.JsonConverters
 {
 	public class OnlyDateConverter : IsoDateTimeConverter
 	{

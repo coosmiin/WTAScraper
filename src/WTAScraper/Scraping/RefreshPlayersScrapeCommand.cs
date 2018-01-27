@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Logging;
-using WTAScraper.Data;
-using WTAScraper.Players;
+using WTAData.Repositories;
+using WTAData.Players;
 using WTAScraper.Website;
 
 namespace WTAScraper.Scraping

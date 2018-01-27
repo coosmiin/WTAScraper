@@ -1,4 +1,4 @@
-﻿namespace WTAScraper.Tournaments
+﻿namespace WTAData.Tournaments
 {
 	public enum TournamentStatus
 	{

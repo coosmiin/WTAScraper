@@ -1,4 +1,4 @@
-﻿namespace WTAScraper.Players
+﻿namespace WTAData.Players
 {
 	public class Player
 	{

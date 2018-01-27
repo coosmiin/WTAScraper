@@ -2,11 +2,11 @@
 using System;
 using System.Linq;
 using WTAScraper.Driver;
-using WTAScraper.Tournaments;
+using WTAData.Tournaments;
 using WTAScraper.Formatters;
 using WTAScraper.Website;
 using Xunit;
-using WTAScraper.Players;
+using WTAData.Players;
 using System.Collections.Generic;
 
 namespace WTAScraper.UnitTests.Website

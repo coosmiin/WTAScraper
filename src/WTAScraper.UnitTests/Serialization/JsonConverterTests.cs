@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using WTAScraper.Tournaments;
+using WTAData.Tournaments;
 using Xunit;
 
 namespace WTAScraper.UnitTests.Serialization

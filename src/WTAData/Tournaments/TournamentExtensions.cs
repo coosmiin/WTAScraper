@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace WTAScraper.Tournaments
+namespace WTAData.Tournaments
 {
 	public static class TournamentExtensions
 	{
