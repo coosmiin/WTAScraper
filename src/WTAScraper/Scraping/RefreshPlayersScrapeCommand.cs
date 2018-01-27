@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Logging;
 using WTAScraper.Data;
-using WTAScraper.Logging;
 using WTAScraper.Players;
 using WTAScraper.Website;
 

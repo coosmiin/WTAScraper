@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using WTAScraper.Data;
-using WTAScraper.Logging;
+using Logging;
 using WTAScraper.Tournaments;
 using WTAScraper.Website;
 

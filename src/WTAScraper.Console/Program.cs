@@ -4,7 +4,7 @@ using WTAScraper.Driver;
 using WTAScraper.Formatters;
 using WTAScraper.Website;
 using WTAScraper.Scraping;
-using WTAScraper.Logging;
+using Logging;
 using WTAScraper.Console.Configuration;
 using SecretStore;
 
