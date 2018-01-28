@@ -30,7 +30,7 @@ namespace WTAScraper.Console
 
 				ISecretStore secretStore = new LocalSecretStore<Program>();
 
-				if (args[2] == LOGGER_COMMAND_PARAMETER)
+				if (args.Length > 2 && args[2] == LOGGER_COMMAND_PARAMETER)
 				{
 					switch (args[3])
 					{
