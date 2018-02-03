@@ -44,7 +44,12 @@ namespace WTAScraper.Scraping
 
 				_tournamentRepository.UpdateTournaments(tournamentsDetails);
 
-				_logger.Log(REFRESH_TOURNAMENTS_COMMAND, BuildLogMessage());
+				string logMessage = BuildLogMessage();
+
+				if (!string.IsNullOrEmpty(logMessage))
+				{
+					_logger.Log(REFRESH_TOURNAMENTS_COMMAND, logMessage);
+				}
 			}
 			catch (Exception ex)
 			{
@@ -65,6 +70,9 @@ namespace WTAScraper.Scraping
 			IEnumerable<TournamentDetails> tournamentsDetails = 
 			_tournamentRepository
 				.GetTournaments(t => (currentUpcomingOrInvalid(t)) && twoDaysBeforeOrAfter(t));
+
+			if (!tournamentsDetails.Any())
+				return null;
 
 			return
 				string.Join(", ", 
