@@ -54,12 +54,17 @@ namespace WTAScraper.Scraping
 
 		private string BuildLogMessage()
 		{
+			bool twoDaysBeforeOrAfter(TournamentDetails t) 
+				=> t.Date < _currentDate.AddDays(2) && t.Date > _currentDate.AddDays(-2);
+
+			bool currentUpcomingOrInvalid(TournamentDetails t)
+				=> t.Status == TournamentStatus.Current 
+					|| t.Status == TournamentStatus.Upcomming 
+					|| t.Status == TournamentStatus.Invalid;
+
 			IEnumerable<TournamentDetails> tournamentsDetails = 
 			_tournamentRepository
-				.GetTournaments(
-					t => t.Status == TournamentStatus.Current 
-						|| ((t.Date < _currentDate.AddDays(2) && (t.Date > _currentDate.AddDays(-2)))
-							&& (t.Status == TournamentStatus.Upcomming || t.Status == TournamentStatus.Invalid)));
+				.GetTournaments(t => (currentUpcomingOrInvalid(t)) && twoDaysBeforeOrAfter(t));
 
 			return
 				string.Join(", ", 

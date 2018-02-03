@@ -20,8 +20,8 @@ namespace WTAScraper.Console
 
 		static void Main(string[] args)
 		{
-			ILogger logger = new ConsoleLogger(System.Console.Out);
 			WtaDriverFactory wtaDriverFactory = null;
+			ILogger logger = new ConsoleLogger(System.Console.Out); ;
 			try
 			{
 				wtaDriverFactory = new WtaDriverFactory(AppContext.BaseDirectory);
@@ -52,27 +52,32 @@ namespace WTAScraper.Console
 					}
 				}
 
+				IScrapeCommand scrapeCommand;
+
 				if (args[0] == $"--{RefreshPlayersScrapeCommand.REFRESH_PLAYERS_COMMAND}")
 				{
-					IScrapeCommand scraper = new RefreshPlayersScrapeCommand(wtaWebsite, new PlayerRepository(args[1]), logger);
+					scrapeCommand = new RefreshPlayersScrapeCommand(wtaWebsite, new PlayerRepository(args[1]), logger);
 
-					scraper.RefreshData();
+					scrapeCommand.RefreshData();
 
 					return;
 				}
 
 				if (args[0] == $"--{RefreshTournamentsScrapeCommand.REFRESH_TOURNAMENTS_COMMAND}")
 				{
-					IScrapeCommand scraper =
+					scrapeCommand =
 						new RefreshTournamentsScrapeCommand(
 							wtaWebsite, new TournamentRepository(args[1], DateTime.Now), logger, DateTime.Now);
-					scraper.RefreshData();
+					scrapeCommand.RefreshData();
 
 					return;
 				}
 			}
 			catch (Exception ex)
 			{
+				if (logger == null)
+					logger = new ConsoleLogger(System.Console.Out);
+
 				logger.Log("Exception", ex.Message);
 			}
 			finally
