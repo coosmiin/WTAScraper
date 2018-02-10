@@ -38,9 +38,10 @@ namespace WTAScraper.Scraping
 					_tournamentRepository
 						.GetTournaments(
 							t => (t.Status == TournamentStatus.Current || t.Status == TournamentStatus.Upcomming)
-								&& (t.SeededPlayerNames == null || !t.SeededPlayerNames.Any()));
+								&& (t.SeededPlayerNames == null || !t.SeededPlayerNames.Any()))
+						.ToList();
 
-				tournamentsDetails = _wtaWebsite.RefreshSeededPlayers(tournamentsDetails);
+				tournamentsDetails = _wtaWebsite.RefreshSeededPlayers(tournamentsDetails).ToList();
 
 				_tournamentRepository.UpdateTournaments(tournamentsDetails);
 

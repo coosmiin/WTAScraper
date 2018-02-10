@@ -58,9 +58,18 @@ namespace WTAScraper.Driver
 
 		public IEnumerable<SeededPlayer> GetTournamentPlayers(string tournamentNameUrl)
 		{			
-			_driver.Navigate().GoToUrl(string.Format($"http://www.wtatennis.com/tournament/{tournamentNameUrl}#draws"));
+			_driver.Navigate().GoToUrl(string.Format($"http://www.wtatennis.com/tournament/{tournamentNameUrl}"));
+
+			IWebElement drawsLink = _driver.FindElement(By.CssSelector(".horizontal-tabs-list .horizontal-tab-button a[href='#draws']"));
+
+			if (drawsLink == null || !drawsLink.Displayed)
+				return Enumerable.Empty<SeededPlayer>();
+
+			drawsLink.Click();
 
 			IEnumerable<IWebElement> elements = _driver.FindElements(By.CssSelector("#singles-draw-tab .srno"));
+
+			var players = new List<SeededPlayer>();
 
 			foreach (IWebElement element in elements)
 			{
@@ -74,8 +83,10 @@ namespace WTAScraper.Driver
 
 				string name = playerElements.First().Text.Replace("&nbsp;", string.Empty);
 
-				yield return new SeededPlayer(name, SeedRank(seedText));
+				players.Add(new SeededPlayer(name, SeedRank(seedText)));
 			}
+
+			return players;
 		}
 
 		private int SeedRank(string seedText)
