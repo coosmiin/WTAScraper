@@ -26,7 +26,7 @@ namespace WTAData.Repositories
 
 			allTournaments.ForEach(t =>
 			{
-				if (!tournamentsNames.Contains(t.Name) && t.Date.AddDays(1) < _currentDate)
+				if (!tournamentsNames.Contains(t.Name) && t.StartDate.AddDays(1) < _currentDate)
 				{
 					t.Status = TournamentStatus.Finished;
 				}
@@ -35,10 +35,13 @@ namespace WTAData.Repositories
 			allTournaments = 
 				allTournaments.Concat(tournaments)
 					.ToLookup(t => t.Name)
-					.Select(g => g.Aggregate((t1, t2) => new TournamentDetails(t1.Id, t1.Name, t2.Date, t2.Status, t1.SeededPlayerNames)))
+					.Select(
+						g => g.Aggregate(
+							(t1, t2) => 
+								new TournamentDetails(t1.Id, t1.Name, t2.StartDate, t2.EndDate, t2.Status, t1.SeededPlayerNames)))
 					.ToList();
 
-			SaveTournaments(allTournaments.OrderByDescending(t => t.Date));
+			SaveTournaments(allTournaments.OrderByDescending(t => t.StartDate));
 		}
 
 		public void UpdateTournaments(IEnumerable<TournamentDetails> tournamentsDetails)
@@ -55,7 +58,7 @@ namespace WTAData.Repositories
 				tournaments[index] = tournamentDetails;
 			}
 
-			SaveTournaments(tournaments.OrderByDescending(t => t.Date));
+			SaveTournaments(tournaments.OrderByDescending(t => t.StartDate));
 		}
 
 		public IEnumerable<TournamentDetails> GetTournaments(Func<TournamentDetails, bool> predicate = null)

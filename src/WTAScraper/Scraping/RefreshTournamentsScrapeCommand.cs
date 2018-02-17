@@ -61,7 +61,7 @@ namespace WTAScraper.Scraping
 		private string BuildLogMessage()
 		{
 			bool twoDaysBeforeOrAfter(TournamentDetails t) 
-				=> t.Date < _currentDate.AddDays(2) && t.Date > _currentDate.AddDays(-2);
+				=> t.StartDate < _currentDate.AddDays(2) && t.StartDate > _currentDate.AddDays(-2);
 
 			bool currentUpcomingOrInvalid(TournamentDetails t)
 				=> t.Status == TournamentStatus.Current 

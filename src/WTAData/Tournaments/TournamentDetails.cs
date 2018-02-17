@@ -8,8 +8,9 @@ namespace WTAData.Tournaments
 	{
 		public IEnumerable<string> SeededPlayerNames { get; }
 
-		public TournamentDetails(int id, string name, DateTime date, TournamentStatus status, IEnumerable<string> seededPlayerNames)
-			: base(id, name, date, status)
+		public TournamentDetails(
+			int id, string name, DateTime startDate, DateTime endDate, TournamentStatus status, IEnumerable<string> seededPlayerNames)
+			: base(id, name, startDate, endDate, status)
 		{
 			SeededPlayerNames = seededPlayerNames;
 		}
@@ -22,7 +23,7 @@ namespace WTAData.Tournaments
 				int hash = 17;
 
 				hash = hash * 397 + Name?.GetHashCode() ?? 0;
-				hash = hash * 397 + Date.GetHashCode();
+				hash = hash * 397 + StartDate.GetHashCode();
 				hash = hash * 397 + Status.GetHashCode();
 				hash = hash * 397 + SeededPlayerNames?.GetHashCode() ?? 0;
 
@@ -37,7 +38,7 @@ namespace WTAData.Tournaments
 			if (o == null)
 				return false;
 
-			return Name == o.Name && Date == o.Date && Status == o.Status
+			return Name == o.Name && StartDate == o.StartDate && EndDate == o.EndDate && Status == o.Status
 				&& (SeededPlayerNames ?? Enumerable.Empty<string>()).SequenceEqual(o.SeededPlayerNames ?? Enumerable.Empty<string>());
 		}
 	}

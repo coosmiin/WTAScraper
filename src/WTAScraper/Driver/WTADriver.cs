@@ -41,10 +41,14 @@ namespace WTAScraper.Driver
 
 		private Tournament CreateTournament(IWebElement container, TournamentStatus status)
 		{
-			IWebElement dateElement = container.FindElement(By.CssSelector(".group-header .date-display-single"));
-			string dateAttribute = dateElement.GetAttribute("content");
+			IWebElement startDateElement = container.FindElement(By.CssSelector(".field--name-field-tournament-start-date span"));
+			IWebElement endDateElement = container.FindElement(By.CssSelector(".field--name-field-tournament-end-date span"));
 
-			DateTime date = _tournamentDataParser.ParseDate(dateAttribute);
+			string startDateAttribute = startDateElement.GetAttribute("content");
+			string endDateAttribute = startDateElement.GetAttribute("content");
+
+			DateTime startDate = _tournamentDataParser.ParseDate(startDateAttribute);
+			DateTime endDate = _tournamentDataParser.ParseDate(endDateAttribute);
 
 			string tournamentHrefAttribute =
 				container.FindElement(By.CssSelector("h2.title-teaser.display-small a")).GetAttribute("href");
@@ -53,7 +57,7 @@ namespace WTAScraper.Driver
 
 			int id = _tournamentDataParser.ParseId(tournamentHrefAttribute);
 
-			return new Tournament(id, name, date, status);
+			return new Tournament(id, name, startDate, endDate, status);
 		}
 
 		public IEnumerable<SeededPlayer> GetTournamentPlayers(string tournamentNameUrl)

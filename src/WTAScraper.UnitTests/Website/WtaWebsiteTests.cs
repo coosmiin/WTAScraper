@@ -17,7 +17,7 @@ namespace WTAScraper.UnitTests.Website
 		public void RefreshSeededPlayers_CurrentTournamentsWithoutDrawsBecomeInvalid()
 		{
 			var tournaments =
-				new List<Tournament> { new Tournament(1, "T1", new DateTime(2017, 1, 1), TournamentStatus.Current) };
+				new List<Tournament> { new Tournament(1, "T1", new DateTime(2017, 1, 1), new DateTime(0), TournamentStatus.Current) };
 
 			var driverStub = Mock.Of<IWtaDriver>(d => 
 				d.GetTournamentPlayers(It.IsAny<string>()) == Enumerable.Empty<SeededPlayer>());
@@ -35,7 +35,7 @@ namespace WTAScraper.UnitTests.Website
 		public void RefreshSeededPlayers_UpcommingTournamentsWithoutDrawsDontChangeStatus()
 		{
 			var tournaments =
-				new List<Tournament> { new Tournament(1, "T1", new DateTime(2017, 1, 1), TournamentStatus.Upcomming) };
+				new List<Tournament> { new Tournament(1, "T1", new DateTime(2017, 1, 1), new DateTime(0), TournamentStatus.Upcomming) };
 
 			var driverStub = Mock.Of<IWtaDriver>(d =>
 				d.GetTournamentPlayers(It.IsAny<string>()) == Enumerable.Empty<SeededPlayer>());
@@ -55,8 +55,8 @@ namespace WTAScraper.UnitTests.Website
 			var tournaments =
 				new List<Tournament>
 				{
-					new Tournament(1, "T1", new DateTime(2017, 1, 1), TournamentStatus.Upcomming),
-					new Tournament(3, "T3", new DateTime(2017, 1, 1), TournamentStatus.Current)
+					new Tournament(1, "T1", new DateTime(2017, 1, 1), new DateTime(0), TournamentStatus.Upcomming),
+					new Tournament(3, "T3", new DateTime(2017, 1, 1), new DateTime(0), TournamentStatus.Current)
 				};
 
 			var driverStub = Mock.Of<IWtaDriver>(d =>
@@ -85,7 +85,7 @@ namespace WTAScraper.UnitTests.Website
 		public void RefreshSeededPlayers_TournamentsWithDraws_NonSeededPlayersAreNotReturned()
 		{
 			var tournaments =
-				new List<Tournament> { new Tournament(1, "T1", new DateTime(2017, 1, 1), TournamentStatus.Current) };
+				new List<Tournament> { new Tournament(1, "T1", new DateTime(2017, 1, 1), new DateTime(0), TournamentStatus.Current) };
 
 			var driverStub = Mock.Of<IWtaDriver>(d =>
 				d.GetTournamentPlayers(It.IsAny<string>()) ==

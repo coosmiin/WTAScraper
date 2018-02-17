@@ -12,16 +12,20 @@ namespace WTAData.Tournaments
 		public string Name { get; }
 
 		[JsonConverter(typeof(OnlyDateConverter))]
-		public DateTime Date { get; }
+		public DateTime StartDate { get; }
+
+		[JsonConverter(typeof(OnlyDateConverter))]
+		public DateTime EndDate { get; }
 
 		[JsonConverter(typeof(StringEnumConverter))]
 		public TournamentStatus Status { get; set; }
 
-		public Tournament(int id, string name, DateTime date, TournamentStatus status)
+		public Tournament(int id, string name, DateTime startDate, DateTime endDate, TournamentStatus status)
 		{
 			Id = id;
 			Name = name;
-			Date = date;
+			StartDate = startDate;
+			EndDate = endDate;
 			Status = status;
 		}
 	}

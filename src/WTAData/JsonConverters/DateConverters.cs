@@ -9,4 +9,12 @@ namespace WTAData.JsonConverters
 			DateTimeFormat = "yyyy-MM-dd";
 		}
 	}
+
+	public class OnlyDateAndTimeConverter : IsoDateTimeConverter
+	{
+		public OnlyDateAndTimeConverter()
+		{
+			DateTimeFormat = "yyyy-MM-dd HH:mm";
+		}
+	}
 }

@@ -67,7 +67,7 @@ namespace WTAScraper.Website
 			{
 				IEnumerable<SeededPlayer> players =
 					WtaDriver.GetTournamentPlayers(
-						_urlFormatter.GetTournamentUrl(tournament.Id, tournament.Name, tournament.Date));
+						_urlFormatter.GetTournamentUrl(tournament.Id, tournament.Name, tournament.StartDate));
 
 				if (!players.Any() && tournament.Status == TournamentStatus.Current)
 				{
