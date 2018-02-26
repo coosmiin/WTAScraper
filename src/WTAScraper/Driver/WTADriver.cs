@@ -82,10 +82,7 @@ namespace WTAScraper.Driver
 
 				IEnumerable<IWebElement> playerElements = container.FindElements(By.CssSelector(".player nobr"));
 
-				if (!playerElements.Any())
-					continue;
-
-				string name = playerElements.First().Text.Replace("&nbsp;", string.Empty);
+				string name = playerElements.Any() ? playerElements.First().Text.Replace("&nbsp;", string.Empty) : string.Empty;
 
 				players.Add(new SeededPlayer(name, SeedRank(seedText)));
 			}

@@ -14,7 +14,8 @@ namespace WTAScraper.UnitTests.Serialization
 			JsonConvert.SerializeObject(
 				new List<TournamentDetails>
 				{
-					new TournamentDetails(1, "Some Name", DateTime.Now, new DateTime(0), TournamentStatus.Current, new [] { "FS", "SS" })
+					new TournamentDetails(
+						1, "Some Name", DateTime.Now, new DateTime(0), TournamentStatus.Current, new [] { "FS", "SS" }, 0)
 				});
 		}
 	}

@@ -5,11 +5,13 @@ namespace WTAData.Tournaments
 {
 	public static class TournamentExtensions
 	{
-		public static TournamentDetails AsTournamentDetails(this Tournament tournament, IEnumerable<string> seededPlayerNames = null)
+		public static TournamentDetails AsTournamentDetails(this Tournament tournament, 
+			IEnumerable<string> seededPlayerNames = null, int roundsCount = 0)
 		{
 			return 
 				new TournamentDetails(
-					tournament.Id, tournament.Name, tournament.StartDate, tournament.EndDate, tournament.Status, seededPlayerNames);
+					tournament.Id, tournament.Name, tournament.StartDate, tournament.EndDate, tournament.Status, 
+					seededPlayerNames, roundsCount);
 		}
 
 		public static IEnumerable<TournamentDetails> AsTournamentDetails(

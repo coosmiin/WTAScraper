@@ -7,12 +7,16 @@ namespace WTAData.Tournaments
 	public class TournamentDetails : Tournament
 	{
 		public IEnumerable<string> SeededPlayerNames { get; }
+		public int RoundsCount { get; }
+
 
 		public TournamentDetails(
-			int id, string name, DateTime startDate, DateTime endDate, TournamentStatus status, IEnumerable<string> seededPlayerNames)
+			int id, string name, DateTime startDate, DateTime endDate, TournamentStatus status, 
+			IEnumerable<string> seededPlayerNames, int roundsCount)
 			: base(id, name, startDate, endDate, status)
 		{
 			SeededPlayerNames = seededPlayerNames;
+			RoundsCount = roundsCount;
 		}
 
 		public override int GetHashCode()

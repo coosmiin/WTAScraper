@@ -80,7 +80,10 @@ namespace WTAScraper.Website
 						.OrderBy(p => p.Seed).Select(p => _playerNameFormatter.GetPlayerName(p.Name))
 						.ToList();
 
-				yield return tournament.AsTournamentDetails(playerNames);
+				int tournamentRounds =
+					playerNames.Count() / 2 - (playerNames.Count() > 1 && playerNames.ElementAt(1) == string.Empty ? 1 : 0);
+
+				yield return tournament.AsTournamentDetails(playerNames, tournamentRounds);
 			}
 		}
 
