@@ -6,12 +6,12 @@ namespace WTAData.Tournaments
 	public static class TournamentExtensions
 	{
 		public static TournamentDetails AsTournamentDetails(this Tournament tournament, 
-			IEnumerable<string> seededPlayerNames = null, int roundsCount = 0)
+			IEnumerable<string> seededPlayerNames = null, int rounds = 0)
 		{
 			return 
 				new TournamentDetails(
 					tournament.Id, tournament.Name, tournament.StartDate, tournament.EndDate, tournament.Status, 
-					seededPlayerNames, roundsCount);
+					seededPlayerNames, rounds);
 		}
 
 		public static IEnumerable<TournamentDetails> AsTournamentDetails(

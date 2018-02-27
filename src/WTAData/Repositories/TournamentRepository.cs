@@ -39,7 +39,7 @@ namespace WTAData.Repositories
 						g => g.Aggregate(
 							(t1, t2) => 
 								new TournamentDetails(
-									t1.Id, t1.Name, t2.StartDate, t2.EndDate, t2.Status, t1.SeededPlayerNames, t1.RoundsCount)))
+									t1.Id, t1.Name, t2.StartDate, t2.EndDate, t2.Status, t1.SeededPlayerNames, t1.Rounds)))
 					.ToList();
 
 			SaveTournaments(allTournaments.OrderByDescending(t => t.StartDate));
