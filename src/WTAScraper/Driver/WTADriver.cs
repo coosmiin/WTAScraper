@@ -45,7 +45,7 @@ namespace WTAScraper.Driver
 			IWebElement endDateElement = container.FindElement(By.CssSelector(".field--name-field-tournament-end-date span"));
 
 			string startDateAttribute = startDateElement.GetAttribute("content");
-			string endDateAttribute = startDateElement.GetAttribute("content");
+			string endDateAttribute = endDateElement.GetAttribute("content");
 
 			DateTime startDate = _tournamentDataParser.ParseDate(startDateAttribute);
 			DateTime endDate = _tournamentDataParser.ParseDate(endDateAttribute);
