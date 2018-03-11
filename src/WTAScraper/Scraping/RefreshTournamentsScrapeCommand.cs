@@ -60,8 +60,8 @@ namespace WTAScraper.Scraping
 
 		private string BuildLogMessage()
 		{
-			bool twoDaysBeforeOrAfter(TournamentDetails t) 
-				=> t.StartDate < _currentDate.AddDays(2) && t.StartDate > _currentDate.AddDays(-2);
+			bool inDaysInterval(TournamentDetails t) 
+				=> t.StartDate < _currentDate.AddDays(2) && t.StartDate > _currentDate.AddDays(-1);
 
 			bool currentUpcomingOrInvalid(TournamentDetails t)
 				=> t.Status == TournamentStatus.Current 
@@ -70,7 +70,7 @@ namespace WTAScraper.Scraping
 
 			IEnumerable<TournamentDetails> tournamentsDetails = 
 			_tournamentRepository
-				.GetTournaments(t => (currentUpcomingOrInvalid(t)) && twoDaysBeforeOrAfter(t));
+				.GetTournaments(t => (currentUpcomingOrInvalid(t)) && inDaysInterval(t));
 
 			if (!tournamentsDetails.Any())
 				return null;
