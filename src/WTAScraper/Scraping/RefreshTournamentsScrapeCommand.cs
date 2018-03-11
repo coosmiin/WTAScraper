@@ -79,7 +79,7 @@ namespace WTAScraper.Scraping
 				string.Join(", ", 
 					tournamentsDetails
 						.OrderBy(t => t.Status)
-						.Select(t => $"{t.StartDate.ToString("dd-MM")} {t.Name} [{t.Status.ToString().Substring(0, 1)}{GetPlayerStatusAcronym(t.SeededPlayerNames)}P]"));
+						.Select(t => $"{t.StartDate.ToString("dd-MM")}: {t.Name} [{t.Status.ToString().Substring(0, 1)}{GetPlayerStatusAcronym(t.SeededPlayerNames)}P]"));
 		}
 
 		private string GetPlayerStatusAcronym(IEnumerable<string> players)
