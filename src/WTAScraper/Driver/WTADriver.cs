@@ -64,7 +64,8 @@ namespace WTAScraper.Driver
 		{			
 			_driver.Navigate().GoToUrl(string.Format($"http://www.wtatennis.com/tournament/{tournamentNameUrl}"));
 
-			IWebElement drawsLink = _driver.FindElement(By.CssSelector(".horizontal-tabs-list .horizontal-tab-button a[href='#draws']"));
+			IWebElement drawsLink = 
+				_driver.FindElements(By.CssSelector(".horizontal-tabs-list .horizontal-tab-button a[href='#draws']")).SingleOrDefault();
 
 			if (drawsLink == null || !drawsLink.Displayed)
 				return Enumerable.Empty<SeededPlayer>();
