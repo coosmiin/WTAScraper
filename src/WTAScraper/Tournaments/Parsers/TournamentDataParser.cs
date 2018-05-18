@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -32,7 +33,7 @@ namespace WTAScraper.Tournaments.Parsers
 					urlParts.Skip(1).Select(
 						u => u.Length <= 2 ? u.ToUpper() : string.Format($"{u.Substring(0, 1).ToUpper()}{u.Substring(1).ToLower()}")));
 
-			return name;
+			return WebUtility.UrlDecode(name);
 		}
 	}
 }

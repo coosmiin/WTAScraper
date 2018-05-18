@@ -50,5 +50,11 @@ namespace WTAScraper.UnitTests.Tournaments.Parsers
 		{
 			Assert.Equal("Australian Open Australia", _parser.ParseName("http://www.wtatennis.com/TOURNAMENT/2018-AUSTRALIAN-OPEN-AUSTRALIA-901"));
 		}
+
+		[Fact]
+		public void ParseName_UrlEncodedUrlPart_NameIsUrlDecoded()
+		{
+			Assert.Equal("Nürnberg Germany", _parser.ParseName("http://www.wtatennis.com/tournament/2018-n%C3%BCrnberg-germany-1068"));
+		}
 	}
 }
