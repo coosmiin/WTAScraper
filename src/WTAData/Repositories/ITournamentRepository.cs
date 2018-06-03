@@ -6,7 +6,10 @@ namespace WTAData.Repositories
 {
 	public interface ITournamentRepository
 	{
-		void AddTournaments(IEnumerable<TournamentDetails> tournaments);
+		void AddOrUpdateNewTournaments(IEnumerable<TournamentDetails> tournaments);
+		void AddOrUpdateNewTournaments_Deprecated(IEnumerable<TournamentDetails> tournaments);
+
+		void CleanupFinishedTournaments(IEnumerable<TournamentDetails> tournaments);
 
 		void UpdateTournaments(IEnumerable<TournamentDetails> tournamentsDetails);
 

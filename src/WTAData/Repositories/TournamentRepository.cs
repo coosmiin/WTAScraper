@@ -4,21 +4,24 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using WTAData.Tournaments;
+using WTAData.Tournaments.DataAccess;
 
 namespace WTAData.Repositories
 {
 	public class TournamentRepository : ITournamentRepository
 	{
+		private readonly ITournamentDataAccess _dataAccess;
 		private readonly string _filePath;
 		private readonly DateTime _currentDate;
 
-		public TournamentRepository(string filePath, DateTime currentDate)
+		public TournamentRepository(ITournamentDataAccess dataAccess, string filePath, DateTime currentDate)
 		{
+			_dataAccess = dataAccess;
 			_filePath = filePath;
 			_currentDate = currentDate;
 		}
 
-		public void AddTournaments(IEnumerable<TournamentDetails> tournaments)
+		public void CleanupFinishedTournaments(IEnumerable<TournamentDetails> tournaments)
 		{
 			List<TournamentDetails> allTournaments = GetTournaments().ToList();
 
@@ -31,6 +34,24 @@ namespace WTAData.Repositories
 					t.Status = TournamentStatus.Finished;
 				}
 			});
+
+			SaveTournaments(allTournaments.OrderByDescending(t => t.StartDate));
+		}
+
+		public void AddOrUpdateNewTournaments(IEnumerable<TournamentDetails> tournaments)
+		{
+			foreach (TournamentDetails tournament in tournaments)
+			{
+				if (!_dataAccess.TryUpdateTournamentStatus(tournament))
+				{
+					_dataAccess.TryAddTournament(tournament);
+				}
+			}
+		}
+
+		public void AddOrUpdateNewTournaments_Deprecated(IEnumerable<TournamentDetails> tournaments)
+		{
+			List<TournamentDetails> allTournaments = GetTournaments().ToList();
 
 			allTournaments = 
 				allTournaments.Concat(tournaments)
@@ -45,21 +66,21 @@ namespace WTAData.Repositories
 			SaveTournaments(allTournaments.OrderByDescending(t => t.StartDate));
 		}
 
-		public void UpdateTournaments(IEnumerable<TournamentDetails> tournamentsDetails)
+		public void UpdateTournaments(IEnumerable<TournamentDetails> tournaments)
 		{
-			TournamentDetails[] tournaments = GetTournaments().ToArray();
+			TournamentDetails[] allTournaments = GetTournaments().ToArray();
 
-			foreach (var tournamentDetails in tournamentsDetails)
+			foreach (var tournamentDetails in tournaments)
 			{
-				int index = Array.FindIndex(tournaments, t => t.Name == tournamentDetails.Name);
+				int index = Array.FindIndex(allTournaments, t => t.Name == tournamentDetails.Name);
 
 				if (index < 0)
 					throw new Exception($"Tournament '{tournamentDetails.Name}' was not found and therefore cannot be updated.");
 
-				tournaments[index] = tournamentDetails;
+				allTournaments[index] = tournamentDetails;
 			}
 
-			SaveTournaments(tournaments.OrderByDescending(t => t.StartDate));
+			SaveTournaments(allTournaments.OrderByDescending(t => t.StartDate));
 		}
 
 		public IEnumerable<TournamentDetails> GetTournaments(Func<TournamentDetails, bool> predicate = null)
@@ -84,6 +105,5 @@ namespace WTAData.Repositories
 		{
 			File.WriteAllText(_filePath, JsonConvert.SerializeObject(tournaments));
 		}
-
 	}
 }

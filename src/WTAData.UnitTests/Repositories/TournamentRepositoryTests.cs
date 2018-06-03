@@ -12,15 +12,7 @@ namespace WTAData.UnitTests.Repositories
 	public class TournamentRepositoryTests
 	{
 		[Fact]
-		public void GetTournaments_FileDoesNotExist_ReturnsEmptyCollection()
-		{
-			var repository = new TournamentRepository("does_not_exist.json", new DateTime(2000, 1, 20));
-
-			Assert.Empty(repository.GetTournaments());
-		}
-
-		[Fact]
-		public void AddTournaments_NoOverlappingTournaments_NewTournamentsAreSaved()
+		public void AddOrUpdateNewTournaments_NoOverlappingTournaments_NewTournamentsAreSaved()
 		{
 			var expectedTournaments = new[]
 			{
@@ -42,14 +34,14 @@ namespace WTAData.UnitTests.Repositories
 					tournaments => savedTournaments = tournaments.OrderBy(t => t.StartDate).ToArray())
 				.Verifiable();
 
-			repositoryMock.Object.AddTournaments(new[] { expectedTournaments[1] });
+			repositoryMock.Object.AddOrUpdateNewTournaments_Deprecated(new[] { expectedTournaments[1] });
 
 			repositoryMock.Protected().Verify("SaveTournaments", Times.Once(), ItExpr.IsAny<IEnumerable<TournamentDetails>>());
 			Assert.Equal(expectedTournaments, savedTournaments);
 		}
 
 		[Fact]
-		public void AddTournaments_OverlappingTournaments_NewTournamentsAreSaved()
+		public void AddOrUpdateNewTournaments_OverlappingTournaments_NewTournamentsAreSaved()
 		{
 			var expectedTournaments = new[]
 			{
@@ -72,14 +64,14 @@ namespace WTAData.UnitTests.Repositories
 					tournaments => savedTournaments = tournaments.OrderBy(t => t.StartDate).ToArray())
 				.Verifiable();
 
-			repositoryMock.Object.AddTournaments(new[] { expectedTournaments[1], expectedTournaments[2] });
+			repositoryMock.Object.AddOrUpdateNewTournaments_Deprecated(new[] { expectedTournaments[1], expectedTournaments[2] });
 
 			repositoryMock.Protected().Verify("SaveTournaments", Times.Once(), ItExpr.IsAny<IEnumerable<TournamentDetails>>());
 			Assert.Equal(expectedTournaments, savedTournaments);
 		}
 
 		[Fact]
-		public void AddTournaments_OverlappingTournaments_PreviousTournamentsDontLosePlayers()
+		public void AddOrUpdateNewTournaments_OverlappingTournaments_PreviousTournamentsDontLosePlayers()
 		{
 			var previousTournaments = new[]
 			{
@@ -95,7 +87,7 @@ namespace WTAData.UnitTests.Repositories
 
 			var expectedTournaments = new[]
 			{
-				GetTournamentDetails(1, TournamentStatus.Finished, new[] { "P1" }),
+				GetTournamentDetails(1, TournamentStatus.Current, new[] { "P1" }),
 				GetTournamentDetails(2, TournamentStatus.Current, new[] { "P2" }),
 				GetTournamentDetails(3, TournamentStatus.Upcomming, new[] { "P3" })
 			};
@@ -114,14 +106,57 @@ namespace WTAData.UnitTests.Repositories
 					tournaments => savedTournaments = tournaments.ToArray())
 				.Verifiable();
 
-			repositoryMock.Object.AddTournaments(newTournaments);
+			repositoryMock.Object.AddOrUpdateNewTournaments_Deprecated(newTournaments);
 
 			repositoryMock.Protected().Verify("SaveTournaments", Times.Once(), ItExpr.IsAny<IEnumerable<TournamentDetails>>());
 			Assert.Equal(expectedTournaments, savedTournaments);
 		}
 
 		[Fact]
-		public void AddTournaments_TournamentNotFound_DateIsBeforeCurrent_StatusIsChangedToFinished()
+		public void AddOrUpdateNewTournaments_UpcommingChangedStatusToCurrent_StatusIsChangedToCurrent()
+		{
+			var previousTournaments = new[]
+			{
+				GetTournamentDetails(1, TournamentStatus.Current),
+				GetTournamentDetails(2, TournamentStatus.Upcomming),
+				GetTournamentDetails(3, TournamentStatus.Upcomming)
+			};
+
+			var newTournaments = new[]
+			{
+				GetTournamentDetails(3, TournamentStatus.Current),
+				GetTournamentDetails(4, TournamentStatus.Current)
+			};
+
+			var expectedTournaments = new[]
+			{
+				GetTournamentDetails(1, TournamentStatus.Current),
+				GetTournamentDetails(2, TournamentStatus.Upcomming),
+				GetTournamentDetails(3, TournamentStatus.Current),
+				GetTournamentDetails(4, TournamentStatus.Current)
+			};
+
+			Mock<TournamentRepository> repositoryMock = GetTournamentRepositoryMock();
+
+			repositoryMock.Protected()
+				.Setup<IEnumerable<TournamentDetails>>("GetTournaments")
+				.Returns(previousTournaments);
+
+			var savedTournaments = Enumerable.Empty<TournamentDetails>();
+
+			repositoryMock.Protected()
+				.Setup("SaveTournaments", ItExpr.IsAny<IEnumerable<TournamentDetails>>())
+				.Callback<IEnumerable<TournamentDetails>>(tournaments => savedTournaments = tournaments)
+				.Verifiable();
+
+			repositoryMock.Object.AddOrUpdateNewTournaments_Deprecated(newTournaments);
+
+			repositoryMock.Protected().Verify("SaveTournaments", Times.Once(), ItExpr.IsAny<IEnumerable<TournamentDetails>>());
+			Assert.Equal(expectedTournaments, savedTournaments);
+		}
+
+		[Fact]
+		public void CleanupFinishedTournaments_TournamentNotFound_DateIsBeforeCurrent_StatusIsChangedToFinished()
 		{
 			var previousTournaments = new[]
 			{
@@ -140,8 +175,7 @@ namespace WTAData.UnitTests.Repositories
 			{
 				GetTournamentDetails(1, TournamentStatus.Finished, null, new DateTime(2000, 1, 18)),
 				GetTournamentDetails(2, TournamentStatus.Finished, null, new DateTime(2000, 1, 17)),
-				GetTournamentDetails(3, TournamentStatus.Current, null),
-				GetTournamentDetails(4, TournamentStatus.Current, null)
+				GetTournamentDetails(3, TournamentStatus.Current, null)
 			};
 
 			Mock<TournamentRepository> repositoryMock = GetTournamentRepositoryMock();
@@ -157,14 +191,14 @@ namespace WTAData.UnitTests.Repositories
 				.Callback<IEnumerable<TournamentDetails>>(tournaments => savedTournaments = tournaments)
 				.Verifiable();
 
-			repositoryMock.Object.AddTournaments(newTournaments);
+			repositoryMock.Object.CleanupFinishedTournaments(newTournaments);
 
 			repositoryMock.Protected().Verify("SaveTournaments", Times.Once(), ItExpr.IsAny<IEnumerable<TournamentDetails>>());
 			Assert.Equal(expectedTournaments, savedTournaments);
 		}
 
 		[Fact]
-		public void AddTournaments_TournamentNotFound_DateIsAfterCurrent_StatusIsNotChangedToFinished()
+		public void CleanupFinishedTournaments_TournamentNotFound_DateIsAfterCurrent_StatusIsNotChangedToFinished()
 		{
 			var previousTournaments = new[]
 			{
@@ -183,8 +217,7 @@ namespace WTAData.UnitTests.Repositories
 			{
 				GetTournamentDetails(2, TournamentStatus.Upcomming, null, new DateTime(2000, 1, 21)),
 				GetTournamentDetails(1, TournamentStatus.Current, null, new DateTime(2000, 1, 19)),
-				GetTournamentDetails(3, TournamentStatus.Current, null),
-				GetTournamentDetails(4, TournamentStatus.Current, null)
+				GetTournamentDetails(3, TournamentStatus.Current, null)
 			};
 
 			Mock<TournamentRepository> repositoryMock = GetTournamentRepositoryMock();
@@ -200,50 +233,7 @@ namespace WTAData.UnitTests.Repositories
 				.Callback<IEnumerable<TournamentDetails>>(tournaments => savedTournaments = tournaments)
 				.Verifiable();
 
-			repositoryMock.Object.AddTournaments(newTournaments);
-
-			repositoryMock.Protected().Verify("SaveTournaments", Times.Once(), ItExpr.IsAny<IEnumerable<TournamentDetails>>());
-			Assert.Equal(expectedTournaments, savedTournaments);
-		}
-
-		[Fact]
-		public void AddTournaments_UpcommingChangedStatusToCurrent_StatusIsChangedToCurrent()
-		{
-			var previousTournaments = new[]
-			{
-				GetTournamentDetails(1, TournamentStatus.Current),
-				GetTournamentDetails(2, TournamentStatus.Upcomming),
-				GetTournamentDetails(3, TournamentStatus.Upcomming)
-			};
-
-			var newTournaments = new[]
-			{
-				GetTournamentDetails(3, TournamentStatus.Current),
-				GetTournamentDetails(4, TournamentStatus.Current)
-			};
-
-			var expectedTournaments = new[]
-			{
-				GetTournamentDetails(1, TournamentStatus.Finished),
-				GetTournamentDetails(2, TournamentStatus.Finished),
-				GetTournamentDetails(3, TournamentStatus.Current),
-				GetTournamentDetails(4, TournamentStatus.Current)
-			};
-
-			Mock<TournamentRepository> repositoryMock = GetTournamentRepositoryMock();
-
-			repositoryMock.Protected()
-				.Setup<IEnumerable<TournamentDetails>>("GetTournaments")
-				.Returns(previousTournaments);
-
-			var savedTournaments = Enumerable.Empty<TournamentDetails>();
-
-			repositoryMock.Protected()
-				.Setup("SaveTournaments", ItExpr.IsAny<IEnumerable<TournamentDetails>>())
-				.Callback<IEnumerable<TournamentDetails>>(tournaments => savedTournaments = tournaments)
-				.Verifiable();
-
-			repositoryMock.Object.AddTournaments(newTournaments);
+			repositoryMock.Object.CleanupFinishedTournaments(newTournaments);
 
 			repositoryMock.Protected().Verify("SaveTournaments", Times.Once(), ItExpr.IsAny<IEnumerable<TournamentDetails>>());
 			Assert.Equal(expectedTournaments, savedTournaments);
@@ -373,9 +363,17 @@ namespace WTAData.UnitTests.Repositories
 			Assert.Equal(expectedTournaments, filteredTournaments);
 		}
 
+		[Fact]
+		public void GetTournaments_FileDoesNotExist_ReturnsEmptyCollection()
+		{
+			var repository = new TournamentRepository(null, "does_not_exist.json", new DateTime(2000, 1, 20));
+
+			Assert.Empty(repository.GetTournaments());
+		}
+
 		private static Mock<TournamentRepository> GetTournamentRepositoryMock()
 		{
-			return new Mock<TournamentRepository>(string.Empty, new DateTime(2000, 1, 20)) { CallBase = true };
+			return new Mock<TournamentRepository>(null, string.Empty, new DateTime(2000, 1, 20)) { CallBase = true };
 		}
 
 		private static TournamentDetails GetTournamentDetails(

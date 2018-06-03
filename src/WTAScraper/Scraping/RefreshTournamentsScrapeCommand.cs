@@ -30,9 +30,11 @@ namespace WTAScraper.Scraping
 		{
 			try
 			{
-				IEnumerable<Tournament> newTournaments = _wtaWebsite.GetCurrentAndUpcomingTournaments();
+				IEnumerable<TournamentDetails> newTournaments = _wtaWebsite.GetCurrentAndUpcomingTournaments().AsTournamentDetails();
 
-				_tournamentRepository.AddTournaments(newTournaments.AsTournamentDetails());
+				_tournamentRepository.CleanupFinishedTournaments(newTournaments);
+				_tournamentRepository.AddOrUpdateNewTournaments(newTournaments);
+				_tournamentRepository.AddOrUpdateNewTournaments_Deprecated(newTournaments);
 
 				IEnumerable<TournamentDetails> tournamentsDetails =
 					_tournamentRepository

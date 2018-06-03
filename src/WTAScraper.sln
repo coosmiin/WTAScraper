@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WTAData.UnitTests", "WTADat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{989A9F8F-802D-4D84-BD55-E90E45E12437}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WTAScraper.IntegrationTests", "WTAScraper.IntegrationTests\WTAScraper.IntegrationTests.csproj", "{D2CE3B97-64DE-4827-8B4F-CBB9048CDA38}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WTAScraper.IntegrationTests", "WTAScraper.IntegrationTests\WTAScraper.IntegrationTests.csproj", "{D2CE3B97-64DE-4827-8B4F-CBB9048CDA38}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WTAData.IntegrationTests", "WTAData.IntegrationTests\WTAData.IntegrationTests.csproj", "{D2608A91-2D6C-4EE2-AE24-79B697E128E7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,10 @@ Global
 		{D2CE3B97-64DE-4827-8B4F-CBB9048CDA38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2CE3B97-64DE-4827-8B4F-CBB9048CDA38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2CE3B97-64DE-4827-8B4F-CBB9048CDA38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2608A91-2D6C-4EE2-AE24-79B697E128E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2608A91-2D6C-4EE2-AE24-79B697E128E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2608A91-2D6C-4EE2-AE24-79B697E128E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2608A91-2D6C-4EE2-AE24-79B697E128E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +61,7 @@ Global
 		{50E1E453-600A-414E-A830-B7555B63F229} = {989A9F8F-802D-4D84-BD55-E90E45E12437}
 		{9DF4CA6A-891B-4B1A-8F47-5A6393DCBFA4} = {989A9F8F-802D-4D84-BD55-E90E45E12437}
 		{D2CE3B97-64DE-4827-8B4F-CBB9048CDA38} = {989A9F8F-802D-4D84-BD55-E90E45E12437}
+		{D2608A91-2D6C-4EE2-AE24-79B697E128E7} = {989A9F8F-802D-4D84-BD55-E90E45E12437}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E53C1CAD-57CB-4BA3-A6E0-6CE8E63C4BC0}
