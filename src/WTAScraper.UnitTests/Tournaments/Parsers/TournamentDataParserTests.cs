@@ -14,17 +14,30 @@ namespace WTAScraper.UnitTests.Tournaments.Parsers
 		}
 
 		[Fact]
+		public void ParseDate_DateWithTimeZone_TimeZoneIsIgnored()
+		{
+			var expectedDate = new DateTime(2017, 8, 28);
+
+			Assert.Equal(expectedDate, _parser.ParseDate("2017-08-28T00:00:01+00:00"));
+		}
+
+		[Fact]
 		public void ParseId_ValidUrl_IdIsParsed()
 		{
 			Assert.Equal(123, _parser.ParseId("http://www.wtatennis.com/tournament/2017-dalian-123"));
 		}
 
 		[Fact]
-		public void ParseDate_DateWithTimeZone_TimeZoneIsIgnored()
+		public void ParseName_ValidUrlWithoutId_NameIsParsed()
 		{
-			var expectedDate = new DateTime(2017, 8, 28);
+			Assert.Equal("Wta Quebec City", _parser.ParseName("http://www.wtatennis.com/tournament/wta-quebec-city"));
+		}
 
-			Assert.Equal(expectedDate, _parser.ParseDate("2017-08-28T00:00:01+00:00"));
+		[Fact]
+		public void ParseId_ValidUrlWithoutId_LargeNegativeRandonIdIsReturned()
+		{
+			int id = _parser.ParseId("http://www.wtatennis.com/tournament/wta-quebec-city");
+			Assert.True(id <= -1000000 && id >= -1000000000);
 		}
 
 		[Fact]

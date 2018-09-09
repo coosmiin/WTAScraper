@@ -7,7 +7,6 @@ using WTAScraper.Scraping;
 using Logging;
 using WTAScraper.Console.Configuration;
 using SecretStore;
-using WTAData.Tournaments.DataAccess;
 
 namespace WTAScraper.Console
 {
@@ -66,13 +65,16 @@ namespace WTAScraper.Console
 
 				if (args[0] == $"--{RefreshTournamentsScrapeCommand.REFRESH_TOURNAMENTS_COMMAND}")
 				{
+					IRepositoryBuilder repositoryBuilder = new RepositoryBuilder();
+
 					scrapeCommand =
 						new RefreshTournamentsScrapeCommand(
-							wtaWebsite, new TournamentRepository(
-								new AWSTournamentDataAccess(
-									secretStore.GetSecret(SecretStoreKeys.AWS_DB_ACCESS_KEY), 
-									secretStore.GetSecret(SecretStoreKeys.AWS_DB_SECRET_KEY)), 
-								args[1], DateTime.Now), logger, DateTime.Now);
+							wtaWebsite, 
+							repositoryBuilder.CreateTournamentRepository(
+								secretStore.GetSecret(SecretStoreKeys.AWS_DB_ACCESS_KEY),
+								secretStore.GetSecret(SecretStoreKeys.AWS_DB_SECRET_KEY),
+								args[1]), 
+							logger, DateTime.Now);
 					scrapeCommand.RefreshData();
 
 					return;

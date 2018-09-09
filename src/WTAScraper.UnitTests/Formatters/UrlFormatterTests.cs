@@ -17,6 +17,16 @@ namespace WTAScraper.UnitTests.Formatters
 		}
 
 		[Fact]
+		public void GetTournamentUrl_NegativeId_UrlIsFormattedCorrectly()
+		{
+			var urlFormatter = new UrlFormatter();
+
+			var url = urlFormatter.GetTournamentUrl(-123, "Quebec City", new DateTime(2017, 10, 13));
+
+			Assert.Equal("quebec-city", url);
+		}
+
+		[Fact]
 		public void GetTournamentUrl_TwoDaysBeforeEndOfYear_UrlContainsNextYear()
 		{
 			var urlFormatter = new UrlFormatter();

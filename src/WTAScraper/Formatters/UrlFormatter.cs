@@ -10,7 +10,12 @@ namespace WTAScraper.Formatters
 
 			name = name.Replace(" ", "-").ToLower();
 
-			return string.Format($"{year}-{name}-{id}");
+			if (id > 0)
+			{
+				return string.Format($"{year}-{name}-{id}");
+			}
+
+			return name;
 		}
 	}
 }

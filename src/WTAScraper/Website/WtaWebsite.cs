@@ -81,7 +81,9 @@ namespace WTAScraper.Website
 						.ToList();
 
 				int tournamentRounds =
-					(int)Math.Log(players.Count(), 2) - (playerNames.Count() > 1 && playerNames.ElementAt(1) == string.Empty ? 1 : 0);
+					players.Any() 
+					? (int)Math.Log(players.Count(), 2) - (playerNames.Count() > 1 && playerNames.ElementAt(1) == string.Empty ? 1 : 0)
+					: 0;
 
 				yield return tournament.AsTournamentDetails(playerNames, tournamentRounds);
 			}

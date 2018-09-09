@@ -30,22 +30,26 @@ namespace WTAScraper.Scraping
 		{
 			try
 			{
+				_tournamentRepository.CleanupFinishedTournaments();
+
 				IEnumerable<TournamentDetails> newTournaments = _wtaWebsite.GetCurrentAndUpcomingTournaments().AsTournamentDetails();
 
-				_tournamentRepository.CleanupFinishedTournaments(newTournaments);
+				_tournamentRepository.CleanupFinishedTournaments_Deprecated(newTournaments);
 				_tournamentRepository.AddOrUpdateNewTournaments(newTournaments);
 				_tournamentRepository.AddOrUpdateNewTournaments_Deprecated(newTournaments);
 
-				IEnumerable<TournamentDetails> tournamentsDetails =
-					_tournamentRepository
-						.GetTournaments(
-							t => (t.Status == TournamentStatus.Current || t.Status == TournamentStatus.Upcomming)
-								&& (t.SeededPlayerNames == null || !t.SeededPlayerNames.Any()))
-						.ToList();
+				IEnumerable<TournamentDetails> tournamentsDetails = 
+					_tournamentRepository.GetFreshTournamentsWithoutPlayers().ToList();
+					//_tournamentRepository
+					//	.GetTournaments_Deprecated(
+					//		t => (t.Status == TournamentStatus.Current || t.Status == TournamentStatus.Upcomming)
+					//			&& (t.SeededPlayerNames == null || !t.SeededPlayerNames.Any()))
+					//	.ToList();
 
 				tournamentsDetails = _wtaWebsite.RefreshSeededPlayers(tournamentsDetails).ToList();
 
 				_tournamentRepository.UpdateTournaments(tournamentsDetails);
+				_tournamentRepository.UpdateTournaments_Deprecated(tournamentsDetails);
 
 				string logMessage = BuildLogMessage();
 
@@ -72,7 +76,7 @@ namespace WTAScraper.Scraping
 
 			IEnumerable<TournamentDetails> tournamentsDetails = 
 			_tournamentRepository
-				.GetTournaments(t => (currentUpcomingOrInvalid(t)) && inDaysInterval(t));
+				.GetTournaments_Deprecated(t => (currentUpcomingOrInvalid(t)) && inDaysInterval(t));
 
 			if (!tournamentsDetails.Any())
 				return null;

@@ -21,7 +21,51 @@ namespace WTAData.Repositories
 			_currentDate = currentDate;
 		}
 
-		public void CleanupFinishedTournaments(IEnumerable<TournamentDetails> tournaments)
+		public void AddOrUpdateNewTournaments_Deprecated(IEnumerable<TournamentDetails> tournaments)
+		{
+			List<TournamentDetails> allTournaments = GetTournaments().ToList();
+
+			allTournaments =
+				allTournaments.Concat(tournaments)
+					.ToLookup(t => t.Name)
+					.Select(
+						g => g.Aggregate(
+							(t1, t2) =>
+								new TournamentDetails(
+									t1.Id, t1.Name, t2.StartDate, t2.EndDate, t2.Status, t1.SeededPlayerNames, t1.Rounds)))
+					.ToList();
+
+			SaveTournaments(allTournaments.OrderByDescending(t => t.StartDate));
+		}
+
+		public void UpdateTournaments_Deprecated(IEnumerable<TournamentDetails> tournaments)
+		{
+			TournamentDetails[] allTournaments = GetTournaments().ToArray();
+
+			foreach (var tournamentDetails in tournaments)
+			{
+				int index = Array.FindIndex(allTournaments, t => t.Name == tournamentDetails.Name);
+
+				if (index < 0)
+					throw new Exception($"Tournament '{tournamentDetails.Name}' was not found and therefore cannot be updated.");
+
+				allTournaments[index] = tournamentDetails;
+			}
+
+			SaveTournaments(allTournaments.OrderByDescending(t => t.StartDate));
+		}
+
+		public IEnumerable<TournamentDetails> GetTournaments_Deprecated(Func<TournamentDetails, bool> predicate = null)
+		{
+			IEnumerable<TournamentDetails> tournaments = GetTournaments();
+
+			if (predicate == null)
+				return tournaments;
+
+			return tournaments.Where(predicate);
+		}
+
+		public void CleanupFinishedTournaments_Deprecated(IEnumerable<TournamentDetails> tournaments)
 		{
 			List<TournamentDetails> allTournaments = GetTournaments().ToList();
 
@@ -42,55 +86,42 @@ namespace WTAData.Repositories
 		{
 			foreach (TournamentDetails tournament in tournaments)
 			{
-				if (!_dataAccess.TryUpdateTournamentStatus(tournament))
+				if (tournament.Id < 0 && _dataAccess.TryFindTournamentId(tournament.Name, tournament.StartDate, out int tournamentId))
+				{
+					tournament.Id = tournamentId;
+				}
+
+				if (!_dataAccess.TryUpdateTournamentStatus(tournament.Id, tournament.StartDate, tournament.Status))
 				{
 					_dataAccess.TryAddTournament(tournament);
 				}
 			}
 		}
 
-		public void AddOrUpdateNewTournaments_Deprecated(IEnumerable<TournamentDetails> tournaments)
+		public void UpdateTournaments(IEnumerable<TournamentDetails> tournamentsDetails)
 		{
-			List<TournamentDetails> allTournaments = GetTournaments().ToList();
-
-			allTournaments = 
-				allTournaments.Concat(tournaments)
-					.ToLookup(t => t.Name)
-					.Select(
-						g => g.Aggregate(
-							(t1, t2) => 
-								new TournamentDetails(
-									t1.Id, t1.Name, t2.StartDate, t2.EndDate, t2.Status, t1.SeededPlayerNames, t1.Rounds)))
-					.ToList();
-
-			SaveTournaments(allTournaments.OrderByDescending(t => t.StartDate));
-		}
-
-		public void UpdateTournaments(IEnumerable<TournamentDetails> tournaments)
-		{
-			TournamentDetails[] allTournaments = GetTournaments().ToArray();
-
-			foreach (var tournamentDetails in tournaments)
+			foreach (var tournament in tournamentsDetails)
 			{
-				int index = Array.FindIndex(allTournaments, t => t.Name == tournamentDetails.Name);
-
-				if (index < 0)
-					throw new Exception($"Tournament '{tournamentDetails.Name}' was not found and therefore cannot be updated.");
-
-				allTournaments[index] = tournamentDetails;
+				if (tournament.SeededPlayerNames != null && tournament.SeededPlayerNames.Any())
+				{
+					_dataAccess.UpdateTournament(tournament);
+				}
 			}
-
-			SaveTournaments(allTournaments.OrderByDescending(t => t.StartDate));
 		}
 
-		public IEnumerable<TournamentDetails> GetTournaments(Func<TournamentDetails, bool> predicate = null)
+		public IEnumerable<TournamentDetails> GetFreshTournamentsWithoutPlayers()
 		{
-			IEnumerable<TournamentDetails> tournaments = GetTournaments();
+			return _dataAccess.GetFreshTournamentsWithoutPlayers();
+		}
 
-			if (predicate == null)
-				return tournaments;
-
-			return tournaments.Where(predicate);
+		public void CleanupFinishedTournaments()
+		{
+			foreach (TournamentDetails tournament in _dataAccess.GetOldUnfinishedTournaments())
+			{
+				TournamentStatus tournamentStatus =
+					tournament.EndDate > _currentDate ? TournamentStatus.Current : TournamentStatus.Finished;
+				_dataAccess.TryUpdateTournamentStatus(tournament.Id, tournament.StartDate, tournamentStatus);
+			}
 		}
 
 		protected virtual IEnumerable<TournamentDetails> GetTournaments()
