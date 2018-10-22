@@ -106,7 +106,7 @@ namespace WTAData.Tournaments.DataAccess
 
 			ScanResponse response = _dynamoDb.ScanAsync(request).Result;
 
-			if (response.Count != 1)
+			if (response.Count == 0)
 				return false;
 
 			tournamentId = int.Parse(response.Items[0]["Id"].N);
@@ -198,12 +198,17 @@ namespace WTAData.Tournaments.DataAccess
 				ExpressionAttributeNames = new Dictionary<string, string> { { "#Status", "Status" } },
 				ExpressionAttributeValues = new Dictionary<string, AttributeValue>()
 				{
-					{ ":players", new AttributeValue { SS = tournament.SeededPlayerNames.ToList() } },
 					{ ":status", new AttributeValue { S = tournament.Status.ToString() } },
 					{ ":rounds", new AttributeValue { N = tournament.Rounds.ToString() } }
 				},
-				UpdateExpression = "SET SeededPlayers = :players, #Status = :status, Rounds = :rounds"
+				UpdateExpression = "SET #Status = :status, Rounds = :rounds"
 			};
+
+			if (tournament.SeededPlayerNames != null && tournament.SeededPlayerNames.Any())
+			{
+				request.ExpressionAttributeValues.Add(":players", new AttributeValue { SS = tournament.SeededPlayerNames.ToList() });
+				request.UpdateExpression = "SET SeededPlayers = :players, #Status = :status, Rounds = :rounds";
+			}
 
 			UpdateItemResponse response = _dynamoDb.UpdateItemAsync(request).Result;
 		}

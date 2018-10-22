@@ -102,10 +102,7 @@ namespace WTAData.Repositories
 		{
 			foreach (var tournament in tournamentsDetails)
 			{
-				if (tournament.SeededPlayerNames != null && tournament.SeededPlayerNames.Any())
-				{
-					_dataAccess.UpdateTournament(tournament);
-				}
+				_dataAccess.UpdateTournament(tournament);
 			}
 		}
 
