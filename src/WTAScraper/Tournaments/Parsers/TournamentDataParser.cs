@@ -11,10 +11,10 @@ namespace WTAScraper.Tournaments.Parsers
 		private const int ID_REGEX_GROUP_INDEX = 2;
 
 		private readonly Regex _tournamentNameAndIdUrlRegex =
-			new Regex(@"^http:\/\/www\.wtatennis\.com\/tournament\/(.*)-(\d{1,})$", RegexOptions.IgnoreCase);
+			new Regex(@"^https:\/\/www\.wtatennis\.com\/tournament\/(.*)-(\d{1,})$", RegexOptions.IgnoreCase);
 
 		private readonly Regex _tournamentNameOnlyUrlRegex =
-			new Regex(@"^http:\/\/www\.wtatennis\.com\/tournament\/(.*)$", RegexOptions.IgnoreCase);
+			new Regex(@"^https:\/\/www\.wtatennis\.com\/tournament\/(.*)$", RegexOptions.IgnoreCase);
 
 		public int ParseId(string tournamentUrl)
 		{
