@@ -18,7 +18,7 @@ namespace WTAScraper.Website
 
 		private static object _lock = new object();
 
-		private readonly Regex _rankingsInstantRegex = new Regex(@"http:\\\/\\\/www\.wtatennis\.com\\\/node\\\/(.*)\\\/singles\\\/ranking\.json", RegexOptions.Compiled);
+		private readonly Regex _rankingsInstantRegex = new Regex(@"https:\\\/\\\/www\.wtatennis\.com\\\/node\\\/(.*)\\\/singles\\\/ranking\.json", RegexOptions.Compiled);
 		private readonly Regex _playerNameRegex = new Regex("<div class=\"player-hidden\">(.*)<\\/div>", RegexOptions.Compiled);
 
 		private readonly string _rankingsJsonUrlFormat = "http://www.wtatennis.com/node/{0}/singles/ranking.json";
