@@ -14,5 +14,15 @@ namespace WTAScraper.UnitTests.Formatters
 
 			Assert.Equal("FN LN", name);
 		}
+
+		[Fact]
+		public void GetPlayerName_TwoWordsLastname_NameIsFormattedCorrectly()
+		{
+			var formatter = new PlayerNameFormatter();
+
+			string name = formatter.GetPlayerName("Van Uytvanck, Alison");
+
+			Assert.Equal("Alison Van Uytvanck", name);
+		}
 	}
 }

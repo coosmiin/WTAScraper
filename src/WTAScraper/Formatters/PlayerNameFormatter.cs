@@ -10,7 +10,7 @@ namespace WTAScraper.Formatters
 		/// </summary>
 		public string GetPlayerName(string name)
 		{
-			return string.Join(" ", name.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).Reverse());
+			return string.Join(" ", name.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Reverse().Select(n => n.Trim()));
 		}
 	}
 }

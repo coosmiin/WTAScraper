@@ -24,63 +24,63 @@ namespace WTAScraper.UnitTests.Tournaments.Parsers
 		[Fact]
 		public void ParseId_ValidUrl_IdIsParsed()
 		{
-			Assert.Equal(123, _parser.ParseId("http://www.wtatennis.com/tournament/2017-dalian-123"));
+			Assert.Equal(123, _parser.ParseId("https://www.wtatennis.com/tournament/2017-dalian-123"));
 		}
 
 		[Fact]
 		public void ParseName_ValidUrlWithoutId_NameIsParsed()
 		{
-			Assert.Equal("Wta Quebec City", _parser.ParseName("http://www.wtatennis.com/tournament/wta-quebec-city"));
+			Assert.Equal("Wta Quebec City", _parser.ParseName("https://www.wtatennis.com/tournament/wta-quebec-city"));
 		}
 
 		[Fact]
 		public void ParseId_ValidUrlWithoutId_LargeNegativeRandonIdIsReturned()
 		{
-			int id = _parser.ParseId("http://www.wtatennis.com/tournament/wta-quebec-city");
+			int id = _parser.ParseId("https://www.wtatennis.com/tournament/wta-quebec-city");
 			Assert.True(id <= -1000000 && id >= -1000000000);
 		}
 
 		[Fact]
 		public void ParseId_NumbersInName_LargeNegativeRandonIdIsReturned()
 		{
-			int id = _parser.ParseId("http://www.wtatennis.com/tournament/wta-limoges-125k");
+			int id = _parser.ParseId("https://www.wtatennis.com/tournament/wta-limoges-125k");
 			Assert.True(id <= -1000000 && id >= -1000000000);
 		}
 
 		[Fact]
 		public void ParseName_ValidUrl_NameIsParsed()
 		{
-			Assert.Equal("Dalian", _parser.ParseName("http://www.wtatennis.com/tournament/2017-dalian-123"));
+			Assert.Equal("Dalian", _parser.ParseName("https://www.wtatennis.com/tournament/2017-dalian-123"));
 		}
 
 		[Fact]
 		public void ParseName_TournamentWithTwoLetterAcronims_TheAcronimIsUppercase()
 		{
-			Assert.Equal("US Open", _parser.ParseName("http://www.wtatennis.com/tournament/2017-us-open-123"));
+			Assert.Equal("US Open", _parser.ParseName("https://www.wtatennis.com/tournament/2017-us-open-123"));
 		}
 
 		[Fact]
 		public void ParseName_TournamentWithOnlyUpperLetters_NameIsParsedAsPascalCase()
 		{
-			Assert.Equal("Wuhan", _parser.ParseName("http://www.wtatennis.com/tournament/2017-WUHAN-123"));
+			Assert.Equal("Wuhan", _parser.ParseName("https://www.wtatennis.com/tournament/2017-WUHAN-123"));
 		}
 
 		[Fact]
 		public void ParseName_UpperCaseUrlPart_NameIsParsed()
 		{
-			Assert.Equal("Australian Open Australia", _parser.ParseName("http://www.wtatennis.com/TOURNAMENT/2018-AUSTRALIAN-OPEN-AUSTRALIA-901"));
+			Assert.Equal("Australian Open Australia", _parser.ParseName("https://www.wtatennis.com/TOURNAMENT/2018-AUSTRALIAN-OPEN-AUSTRALIA-901"));
 		}
 
 		[Fact]
 		public void ParseName_UrlEncodedUrlPart_NameIsUrlDecoded()
 		{
-			Assert.Equal("Nürnberg Germany", _parser.ParseName("http://www.wtatennis.com/tournament/2018-n%C3%BCrnberg-germany-1068"));
+			Assert.Equal("Nürnberg Germany", _parser.ParseName("https://www.wtatennis.com/tournament/2018-n%C3%BCrnberg-germany-1068"));
 		}
 
 		[Fact]
 		public void ParseName_NumbersInName_NameIsParsed()
 		{
-			Assert.Equal("Wta Limoges 125k", _parser.ParseName("http://www.wtatennis.com/tournament/wta-limoges-125k"));
+			Assert.Equal("Wta Limoges 125k", _parser.ParseName("https://www.wtatennis.com/tournament/wta-limoges-125k"));
 		}
 	}
 }
